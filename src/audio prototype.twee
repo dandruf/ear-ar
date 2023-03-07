@@ -1,0 +1,215 @@
+:: StoryTitle
+Ear AR
+
+
+:: StoryData
+{
+  "ifid": "D6596D57-C952-4EB7-BA6C-1BAB7C71402D",
+  "format": "SugarCube",
+  "format-version": "2.30.0",
+  "start": "Start",
+  "zoom": 1
+}
+
+:: Start
+Let's figure out if geolocation works on your device.
+
+[[Search for Geotriggers]]
+
+
+:: Leverett
+This is Leverett House! 
+Listen to the audio.
+
+<<playTrack "hbs">>
+
+Would you like to [[play again | Leverett]], or [[move on | Search for Geotriggers]]?
+Remember: don't move on until you've made it to the next location!
+
+/* After a story plays, I want there to be a refractory period 
+before we look for geolocation again--otherwise, we'll always play
+the same passage again. maybe we should make a flag that when you
+are still in the area, it doesn't play and tells the user as such */
+
+:: HSGE
+This is HGSE!
+
+<<playTrack "levelup">>
+
+Would you like to [[play again | HGSE]], or [[move on | Search for Geotriggers]]?
+Remember: don't move on until you've made it to the next location!
+
+
+
+:: Search for Geotriggers
+<<if approxEqual($Location.latitude, $HGSElat) and approxEqual($Location.longitude, $HGSElong)>>
+  <<goto [[HSGE]]>> 
+<</if>>
+
+<<if approxEqual($Location.latitude, $Leverettlat) and approxEqual($Location.longitude, $Leverettlong)>>
+	<<goto [[Leverett]]>>
+<</if>>
+
+<<if $Location.latitude == -1 and $Location.longitude == -1>>
+	Error: missing/disabled geolocation API. Please allow geolocation.
+<</if>>
+
+/* Call this passage on a loop until we find a location */
+<<if $Location.latitude == 0 and $Location.longitude == 0>>
+  <<goto [[Search for Geotriggers]]>>
+<</if>>
+
+[[Refresh Location Here->Search for Geotriggers]]
+
+
+
+
+:: StoryInit
+<<set $Leverettlat = 42.3692166>>
+<<set $Leverettlong = -71.1161296>>
+
+<<set $LevLibraryLat = 42.3692959>>
+<<set $LevLibraryLong = -71.1167583>>
+
+<<set $McKinlockLat = 42.3696076>>
+<<set $McKinlockLong = -71.1169853>>
+
+<<set $OntimeLat = 42.3758308>>
+<<set $OntimeLong = -71.1143802>>
+
+<<set $YenchingLat = 42.3775986>>
+<<set $YenchingLong = -71.1143849>>
+
+<<set $NorthwestLat = 42.380035>>
+<<set $NortwestLong = -71.1152577>>
+
+<<set $CVSLat = 42.3731161>>
+<<set $CVSLong = -71.1184348>>
+
+<<set $HGSElat = 42.375358>>
+<<set $HGSElong = -71.121691>>
+
+<<script>>
+    init();
+<</script>>
+
+<<run UIBar.stow() >>
+
+<<cacheaudio "hbs" "../audio/hbs.mp3">>
+<<cacheaudio "levelup" "../audio/levelup.mp3">>
+/* https://freesound.org/people/sonically_sound/sounds/624878/ */
+
+
+:: playTrackWidget [widget]
+<<widget 'playTrack'>>\
+    <<nobr>>
+        <<if !TrackExists($args[0])>>
+			    <<print "Error: Cannot load file \"" + $args[0] "\"." >>
+        <<else>>
+            <<print "Track \"" + $args[0] + "\" is loaded. ">>
+                <<if !isPlaying($args[0])>>
+                        <<masteraudio stop>>   
+                        <<print "Isn't playing track yet. Starting now. ">>
+                        <<audio $args[0] volume 1 play>>
+                <</if>>     
+        <</if>>
+    <</nobr>>\
+<</widget>>
+
+
+
+:: StoryScript [script]
+// initialization, on loop (ideally)
+window.init = function () {
+  if ("geolocation" in navigator && typeof navigator.geolocation.getCurrentPosition === "function") {
+  // setup the success and error callbacks as well as the options object
+  var positionSuccess = function (position) {
+  // you could simply assign the `coords` object to `$Location`,
+  // however, this assigns only the latitude and longitude since
+  // that seems to have been what you were attempting to do before
+  state.active.variables["Location"] = {
+  latitude : position.coords.latitude,
+  longitude : position.coords.longitude
+  };
+  // access would be like: $Location.latitude and $Location.longitude
+  },
+  positionError = function (error) {
+  /* currently a no-op; code that handles errors */
+    console.warn(`ERROR(${error.code}): ${error.message}`);
+  },
+  positionOptions = {
+  timeout: 31000,
+  enableHighAccuracy: true,
+  maximumAge : 2000 // (in ms) cached results may not be older than 1 minute
+  // this can probably be tweaked upwards a bit
+  };
+
+  // since the API is asynchronous, we give `$Location` an initial value, so
+  // trying to access it immediately causes no issues if the first callback
+  // takes a while
+  state.active.variables["Location"] = { latitude : 0, longitude : 0 };
+
+  // make an initial call for a position while the system is still starting
+  // up, so we can get real data ASAP (probably not strictly necessary as the
+  // first call via the `predisplay` task [below] should happen soon enough)
+  navigator.geolocation.getCurrentPosition(
+  positionSuccess,
+  positionError,
+  positionOptions
+  );
+
+  // register a `predisplay` task which attempts to update the `$Location`
+  // variable whenever passage navigation occurs
+  predisplay["geoGetCurrentPosition"] = function () {
+  navigator.geolocation.getCurrentPosition(
+  positionSuccess,
+  positionError,
+  positionOptions
+  );
+  };
+  } else {
+  /* currently a no-op; code that handles a missing/disabled geolocation API */
+    state.active.variables["Location"] = { latitude : -1, longitude : -1 
+  }
+}};
+ 
+// (function approxEqual(a, b, allowedDiff) {
+window.approxEqual = function (a, b, allowedDiff) { // allowedDiff must always be > 0
+if (a === b) { // handles various "exact" edge cases
+return true;
+}
+allowedDiff = allowedDiff || 0.0005;
+return Math.abs(a - b) < allowedDiff;
+};
+// }());
+
+/* Code from https://electricarchaeology.ca/2015/05/20/low-friction-augmented-reality/ 
+
+https://twinery.org/forum/discussion/2789/geolocation-as-trigger
+*/
+
+// set up path to enable audio to happen
+// currently unused because string interpolation with filepaths
+// are throwing fits
+window.setup_audio = function () {
+    setup.SoundPath = "audio/";
+}
+
+// Check to see if trackID is currently loaded
+window.TrackExists = function (trackID) {
+	return SimpleAudio.tracks.has(trackID);
+};
+
+// Check to see if trackID is the currently playing track
+window.isPlaying = function (trackID) {
+	var track = SimpleAudio.tracks.get(trackID);
+	return track !== null && track.isPlaying();
+};
+
+/* Code from http://twinery.org/questions/43360/how-to-add-audio-using-sugar-cube-or-html-or-anything-heeeelp 
+
+https://qjzhvmqlzvoo5lqnrvuhmg.on.drv.tw/UInv/Sample_Code.html#Music
+
+Troubleshooting fn not found: https://intfiction.org/t/function-not-defined-message-error-sugarcube/50385/6
+
+fns overview https://www.reddit.com/r/twinegames/comments/qenb6o/javascript_functions_and_sugarcube/ */

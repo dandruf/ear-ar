@@ -264,8 +264,6 @@ https://twinery.org/forum/discussion/2789/geolocation-as-trigger
 */
 
 // set up path to enable audio to happen
-// currently unused because string interpolation with filepaths
-// are throwing fits
 window.setup_audio = function () {
     setup.SoundPath = "audio/";
 }
@@ -288,7 +286,7 @@ https://qjzhvmqlzvoo5lqnrvuhmg.on.drv.tw/UInv/Sample_Code.html#Music
 Troubleshooting fn not found: https://intfiction.org/t/function-not-defined-message-error-sugarcube/50385/6
 
 fns overview https://www.reddit.com/r/twinegames/comments/qenb6o/javascript_functions_and_sugarcube/ */</script><tw-passagedata pid="1" name="Search for Geotriggers" tags="" position="100,100" size="100,100">&lt;&lt;if approxEqual($Location.latitude, $HGSElat) and approxEqual($Location.longitude, $HGSElong)&gt;&gt;
-  &lt;&lt;goto [[HSGE]]&gt;&gt; 
+      &lt;&lt;goto [[HSGE]]&gt;&gt; 
 &lt;&lt;/if&gt;&gt;
 
 &lt;&lt;if approxEqual($Location.latitude, $Leverettlat) and approxEqual($Location.longitude, $Leverettlong)&gt;&gt;
@@ -301,7 +299,7 @@ fns overview https://www.reddit.com/r/twinegames/comments/qenb6o/javascript_func
 
 /* Call this passage on a loop until we find a location */
 &lt;&lt;if $Location.latitude == 0 and $Location.longitude == 0&gt;&gt;
-  &lt;&lt;goto [[Search for Geotriggers]]&gt;&gt;
+    &lt;&lt;goto [[Search for Geotriggers]]&gt;&gt;
 &lt;&lt;/if&gt;&gt;
 
 [[Refresh Location Here-&gt;Search for Geotriggers]]</tw-passagedata><tw-passagedata pid="2" name="Let&#39;s Begin" tags="" position="800,550" size="100,100">Let&#39;s figure out if geolocation works on your device.
@@ -336,7 +334,7 @@ Remember: don&#39;t move on until you&#39;ve made it to the next location!</tw-p
 &lt;&lt;/widget&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="Leverett" tags="" position="600,100" size="100,100">This is Leverett House! 
 Listen to the audio.
 
-&lt;&lt;playTrack &quot;hbs&quot;&gt;&gt;
+&lt;&lt;playTrack &quot;levelup&quot;&gt;&gt;
 
 Would you like to [[play again | Leverett]], or [[move on | Search for Geotriggers]]?
 Remember: don&#39;t move on until you&#39;ve made it to the next location!
@@ -368,6 +366,8 @@ are still in the area, it doesn&#39;t play and tells the user as such */</tw-pas
 &lt;&lt;set $HGSElat = 42.375358&gt;&gt;
 &lt;&lt;set $HGSElong = -71.121691&gt;&gt;
 
+&lt;&lt;set $IsPlayingAudio = false&gt;&gt;
+
 &lt;&lt;script&gt;&gt;
     init();
 &lt;&lt;/script&gt;&gt;
@@ -378,14 +378,17 @@ are still in the area, it doesn&#39;t play and tells the user as such */</tw-pas
 &lt;&lt;cacheaudio &quot;levelup&quot; &quot;../audio/levelup.mp3&quot;&gt;&gt;
 /* https://freesound.org/people/sonically_sound/sounds/624878/ */</tw-passagedata><tw-passagedata pid="7" name="playTrackWidget" tags="widget" position="850,100" size="100,100">&lt;&lt;widget &#39;playTrack&#39;&gt;&gt;\
     &lt;&lt;nobr&gt;&gt;
+    	&lt;&lt;set $IsPlayingAudio = true&gt;&gt;
         &lt;&lt;if !TrackExists($args[0])&gt;&gt;
-			    &lt;&lt;print &quot;Error: Cannot load file \&quot;&quot; + $args[0] &quot;\&quot;.&quot; &gt;&gt;
+			&lt;&lt;print &quot;Error: Cannot load file. &quot;&gt;&gt;
+            &lt;&lt;set $IsPlayingAudio = false&gt;&gt;
         &lt;&lt;else&gt;&gt;
-            &lt;&lt;print &quot;Track \&quot;&quot; + $args[0] + &quot;\&quot; is loaded. &quot;&gt;&gt;
-                &lt;&lt;if !isPlaying($args[0])&gt;&gt;
-                        &lt;&lt;masteraudio stop&gt;&gt;   
-                        &lt;&lt;print &quot;Isn&#39;t playing track yet. Starting now. &quot;&gt;&gt;
+            /* &lt;&lt;print &quot;Track is loaded. &quot;&gt;&gt; */
+                &lt;&lt;if !isPlaying($args[0])&gt;&gt;  /* If track isn&#39;t already playing, play it. */
+                        /* &lt;&lt;print &quot;Isn&#39;t playing track yet. Starting now. &quot;&gt;&gt; */
+                        &lt;&lt;masteraudio stop&gt;&gt;
                         &lt;&lt;audio $args[0] volume 1 play&gt;&gt;
+                        &lt;&lt;set $IsPlayingAudio = false&gt;&gt;
                 &lt;&lt;/if&gt;&gt;     
         &lt;&lt;/if&gt;&gt;
     &lt;&lt;/nobr&gt;&gt;\

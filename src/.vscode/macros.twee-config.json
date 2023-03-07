@@ -1,0 +1,9 @@
+{
+    "sugarcube-2": {
+        "macros": {
+            "playTrack": {
+                "description": "stops all other audio to play audio track and prints errors"
+            }
+        }
+    }
+}
