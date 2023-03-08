@@ -11,94 +11,185 @@ Ear AR
   "zoom": 1
 }
 
-:: Start
-Let's figure out if geolocation works on your device.
-
-[[Search for Geotriggers]]
-
-
-:: Leverett
-This is Leverett House! 
-Listen to the audio.
-
-<<playTrack "hbs">>
-
-Would you like to [[play again | Leverett]], or [[move on | Search for Geotriggers]]?
-Remember: don't move on until you've made it to the next location!
-
-/* After a story plays, I want there to be a refractory period 
-before we look for geolocation again--otherwise, we'll always play
-the same passage again. maybe we should make a flag that when you
-are still in the area, it doesn't play and tells the user as such */
-
-:: HSGE
-This is HGSE!
-
-<<playTrack "levelup">>
-
-Would you like to [[play again | HGSE]], or [[move on | Search for Geotriggers]]?
-Remember: don't move on until you've made it to the next location!
-
-
-
-:: Search for Geotriggers
-<<if approxEqual($Location.latitude, $HGSElat) and approxEqual($Location.longitude, $HGSElong)>>
-  <<goto [[HSGE]]>> 
-<</if>>
-
-<<if approxEqual($Location.latitude, $Leverettlat) and approxEqual($Location.longitude, $Leverettlong)>>
-	<<goto [[Leverett]]>>
-<</if>>
-
-<<if $Location.latitude == -1 and $Location.longitude == -1>>
-	Error: missing/disabled geolocation API. Please allow geolocation.
-<</if>>
-
-/* Call this passage on a loop until we find a location */
-<<if $Location.latitude == 0 and $Location.longitude == 0>>
-  <<goto [[Search for Geotriggers]]>>
-<</if>>
-
-[[Refresh Location Here->Search for Geotriggers]]
-
-
-
-
 :: StoryInit
-<<set $Leverettlat = 42.3692166>>
-<<set $Leverettlong = -71.1161296>>
+/* Create data map of all story locations and associated sound files */
+<<set $pointsOfInterest to {
+	"GTower":  {
+		lat: 42.3692166,
+		long: -71.1161296,
+		description: "Home sweet home",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "LevLibrary":  {
+		lat: 42.3692166,
+		long: -71.1167583,
+		description: "Study study study",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "Mckinlock":  {
+		lat: 42.3696076,
+		long: -71.1169853,
+		description: "Lunch time",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "OnTime":  {
+		lat: 42.3758308,
+		long: -71.1143802,
+		description: "Gotta run!",
+		audioName: "hbs",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "Yenching":  {
+		lat: 42.3775986,
+		long: -71.1143849,
+		description: "Rare books",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "Northwest":  {
+		lat: 42.380035,
+		long: -71.1152577,
+		description: "Chinese class",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "CVS":  {
+		lat: 42.3731161,
+		long: -71.1184348,
+		description: "I need another box of tissues",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "HGSE":  {
+		lat: 42.375358,
+		long: -71.121691,
+		description: "Karen Brennan and Brian Yu!",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	}
+}>>
 
-<<set $LevLibraryLat = 42.3692959>>
-<<set $LevLibraryLong = -71.1167583>>
-
-<<set $McKinlockLat = 42.3696076>>
-<<set $McKinlockLong = -71.1169853>>
-
-<<set $OntimeLat = 42.3758308>>
-<<set $OntimeLong = -71.1143802>>
-
-<<set $YenchingLat = 42.3775986>>
-<<set $YenchingLong = -71.1143849>>
-
-<<set $NorthwestLat = 42.380035>>
-<<set $NortwestLong = -71.1152577>>
-
-<<set $CVSLat = 42.3731161>>
-<<set $CVSLong = -71.1184348>>
-
-<<set $HGSElat = 42.375358>>
-<<set $HGSElong = -71.121691>>
+/* Loop through data map and cache all audio */
+<<for _key range Object.keys($pointsOfInterest)>>
+  <<if $pointsOfInterest[_key].audioName == "">>
+    <<set $pointsOfInterest[_key].audioName to _key>>
+  <</if>>
+  <<cacheaudio $pointsOfInterest[_key].audioName $pointsOfInterest[_key].audioPath>>  
+  /* <<print _key + ": cached " + $pointsOfInterest[_key].audioName + " into the system.">> */
+<</for>>
 
 <<script>>
     init();
 <</script>>
 
+<<set $isLocationLive to true>>
+
+/* hide the reset bar on the side */
 <<run UIBar.stow() >>
 
-<<cacheaudio "hbs" "../audio/hbs.mp3">>
-<<cacheaudio "levelup" "../audio/levelup.mp3">>
+/* <<cacheaudio "hbs" "../audio/hbs.mp3">>
+<<cacheaudio "levelup" "../audio/levelup.mp3">> */
 /* https://freesound.org/people/sonically_sound/sounds/624878/ */
 
+
+
+:: Start
+If you're able to follow along with the audio by walking around, let's [[find your location | Process Location]]!
+
+Otherwise, [[enable testing mode | Process Location][$isLocationLive to false]].
+
+
+:: Process Location
+<<if $isLocationLive == true>>
+  Let's see where you are. Hmm...
+
+  <<nobr>>
+  <<for _key range Object.keys($pointsOfInterest)>>
+    <<if approxEqual($Location.latitude, $pointsOfInterest[_key].lat)>>
+      <<if approxEqual($Location.longitude, $pointsOfInterest[_key].long)>>
+        It looks like you're close to _key.
+        [[Learn more about this location? | _key]]
+      <</if>>
+    <</if>>
+  <</for>>
+  <</nobr>>
+
+  Did you mean to go somewhere else? [[Go back. | Process Location]]
+
+  <<if $Location.latitude == -1 and $Location.longitude == -1>>
+    Oh no! We don't know where you are. Maybe your geolocation is disabled.
+    Would you like to [[enable testing mode | Process Location][$isLocationLive to false]]?
+  <</if>>
+
+  /* Call this passage on a loop until we find a location */
+  <<if $Location.latitude == 0 and $Location.longitude == 0>>
+    <<goto [[Process Location]]>>
+  <</if>>
+<<else>>
+  Testing is enabled, so we won't use your location. 
+  Which point of interest do you want to learn more about?
+  <<nobr>>
+    <ul>
+    <<for _key range Object.keys($pointsOfInterest)>>
+      /* For some reason, I can't index by both key and value and I'm not sure why */
+        <<set $poi to _key + ": (" + $pointsOfInterest[_key].lat + ", " + $pointsOfInterest[_key].long + ")">>
+      <li>
+        [[$poi | _key]]
+      </li>
+    <</for>>
+    </ul>
+  <</nobr>>
+<</if>>
+
+:: GTower
+This is Leverett House G Tower! 
+Listen to the audio.
+
+<<playTrack "hbs">>
+
+Would you like to [[play again | Leverett]], or [[move on | Process Location]]?
+Remember: don't move on until you've made it to the next location!
+
+:: HGSE
+This is HGSE!
+
+<<playTrack $pointsOfInterest["HGSE"].audioName>>
+
+Would you like to [[play again | HGSE]], or [[move on | Process Location]]?
+Remember: don't move on until you've made it to the next location!
+
+:: LevLibrary
+This is Lev Library!
+$pointsOfInterest["LevLibrary"].description
+[[Go back.| Process Location]]
+
+:: CVS
+This is CVS!
+$pointsOfInterest["CVS"].description
+[[Go back.| Process Location]]
+
+:: Mckinlock
+This is Mckinlock!
+$pointsOfInterest["Mckinlock"].description
+[[Go back.| Process Location]]
+
+:: OnTime
+This is where the bell tower rings at 8:45!
+$pointsOfInterest["OnTime"].description
+[[Go back.| Process Location]]
+
+:: Northwest
+We're at northwest!
+$pointsOfInterest["Northwest"].description
+[[Go back.| Process Location]]
+
+:: Yenching
+We're at Yenching!
+$pointsOfInterest["Yenching"].description
+[[Go back.| Process Location]]
 
 :: playTrackWidget [widget]
 <<widget 'playTrack'>>\
