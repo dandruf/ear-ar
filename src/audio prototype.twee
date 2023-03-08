@@ -86,6 +86,7 @@ Ear AR
 <</script>>
 
 <<set $isLocationLive to true>>
+<<set $poi to "null">>
 
 /* hide the reset bar on the side */
 <<run UIBar.stow() >>
@@ -111,7 +112,7 @@ Otherwise, [[enable testing mode | Process Location][$isLocationLive to false]].
     <<if approxEqual($Location.latitude, $pointsOfInterest[_key].lat)>>
       <<if approxEqual($Location.longitude, $pointsOfInterest[_key].long)>>
         It looks like you're close to _key.
-        [[Learn more about this location? | _key]]
+        [[Learn more about this location? | Display Location][$poi to _key]]
       <</if>>
     <</if>>
   <</for>>
@@ -137,59 +138,23 @@ Otherwise, [[enable testing mode | Process Location][$isLocationLive to false]].
       /* For some reason, I can't index by both key and value and I'm not sure why */
         <<set $poi to _key + ": (" + $pointsOfInterest[_key].lat + ", " + $pointsOfInterest[_key].long + ")">>
       <li>
-        [[$poi | _key]]
+        [[$poi | Display Location][$poi to _key]]
       </li>
     <</for>>
     </ul>
   <</nobr>>
 <</if>>
 
-:: GTower
-This is Leverett House G Tower! 
-Listen to the audio.
+/* One location passage instead of a passage per location */
+:: Display Location
+This is $poi!
 
-<<playTrack "hbs">>
+<<playTrack $pointsOfInterest[poi].audioName>>
+/* <<run $history.push($poi)>> */
 
-Would you like to [[play again | Leverett]], or [[move on | Process Location]]?
+Would you like to [[play again | Display Location]] or [[move on | Process Location]]?
 Remember: don't move on until you've made it to the next location!
 
-:: HGSE
-This is HGSE!
-
-<<playTrack $pointsOfInterest["HGSE"].audioName>>
-
-Would you like to [[play again | HGSE]], or [[move on | Process Location]]?
-Remember: don't move on until you've made it to the next location!
-
-:: LevLibrary
-This is Lev Library!
-$pointsOfInterest["LevLibrary"].description
-[[Go back.| Process Location]]
-
-:: CVS
-This is CVS!
-$pointsOfInterest["CVS"].description
-[[Go back.| Process Location]]
-
-:: Mckinlock
-This is Mckinlock!
-$pointsOfInterest["Mckinlock"].description
-[[Go back.| Process Location]]
-
-:: OnTime
-This is where the bell tower rings at 8:45!
-$pointsOfInterest["OnTime"].description
-[[Go back.| Process Location]]
-
-:: Northwest
-We're at northwest!
-$pointsOfInterest["Northwest"].description
-[[Go back.| Process Location]]
-
-:: Yenching
-We're at Yenching!
-$pointsOfInterest["Yenching"].description
-[[Go back.| Process Location]]
 
 :: playTrackWidget [widget]
 <<widget 'playTrack'>>\
