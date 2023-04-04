@@ -1,0 +1,273 @@
+:: StoryTitle
+Ear AR
+
+
+:: StoryData
+{
+  "ifid": "D6596D57-C952-4EB7-BA6C-1BAB7C71402D",
+  "format": "SugarCube",
+  "format-version": "2.30.0",
+  "start": "Start",
+  "zoom": 1
+}
+
+:: StoryInit
+/* Create data map of all story locations and associated sound files */
+<<set $pointsOfInterest to {
+	"GTower":  {
+		lat: 42.3692166,
+		long: -71.1161296,
+		description: "Home sweet home",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "LevLibrary":  {
+		lat: 42.3692166,
+		long: -71.1167583,
+		description: "Study study study",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "Mckinlock":  {
+		lat: 42.3696076,
+		long: -71.1169853,
+		description: "Lunch time",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "OnTime":  {
+		lat: 42.3758308,
+		long: -71.1143802,
+		description: "Gotta run!",
+		audioName: "hbs",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "Yenching":  {
+		lat: 42.3775986,
+		long: -71.1143849,
+		description: "Rare books",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "Northwest":  {
+		lat: 42.380035,
+		long: -71.1152577,
+		description: "Chinese class",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "CVS":  {
+		lat: 42.3731161,
+		long: -71.1184348,
+		description: "I need another box of tissues",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	},
+  "HGSE":  {
+		lat: 42.375358,
+		long: -71.121691,
+		description: "Karen Brennan and Brian Yu!",
+		audioName: "",
+    audioPath: "../audio/levelup.mp3"
+	}
+}>>
+
+/* Loop through data map and cache all audio */
+<<for _key range Object.keys($pointsOfInterest)>>
+  <<if $pointsOfInterest[_key].audioName == "">>
+    <<set $pointsOfInterest[_key].audioName to _key>>
+  <</if>>
+  <<cacheaudio $pointsOfInterest[_key].audioName $pointsOfInterest[_key].audioPath>>  
+  /* <<print _key + ": cached " + $pointsOfInterest[_key].audioName + " into the system.">> */
+<</for>>
+
+<<script>>
+    init();
+<</script>>
+
+<<set $isLocationLive to true>>
+<<set $poi to "null">>
+
+/* hide the reset bar on the side */
+<<run UIBar.stow() >>
+
+/* <<cacheaudio "hbs" "../audio/hbs.mp3">>
+<<cacheaudio "levelup" "../audio/levelup.mp3">> */
+/* https://freesound.org/people/sonically_sound/sounds/624878/ */
+
+
+
+:: Start
+If you're able to follow along with the audio by walking around, let's [[find your location | Process Location]]!
+
+Otherwise, [[enable testing mode | Process Location][$isLocationLive to false]].
+
+
+:: Process Location
+<<if $isLocationLive == true>>
+  Let's see where you are. Hmm...
+
+  <<nobr>>
+  <<for _key range Object.keys($pointsOfInterest)>>
+    <<if approxEqual($Location.latitude, $pointsOfInterest[_key].lat)>>
+      <<if approxEqual($Location.longitude, $pointsOfInterest[_key].long)>>
+        It looks like you're close to _key.
+        [[Learn more about this location? | Display Location][$poi to _key]]
+      <</if>>
+    <</if>>
+  <</for>>
+  <</nobr>>
+
+  Did you mean to go somewhere else? [[Go back. | Process Location]]
+
+  <<if $Location.latitude == -1 and $Location.longitude == -1>>
+    Oh no! We don't know where you are. Maybe your geolocation is disabled.
+    Would you like to [[enable testing mode | Process Location][$isLocationLive to false]]?
+  <</if>>
+
+  /* Call this passage on a loop until we find a location */
+  <<if $Location.latitude == 0 and $Location.longitude == 0>>
+    <<goto [[Process Location]]>>
+  <</if>>
+<<else>>
+  Testing is enabled, so we won't use your location. 
+  Which point of interest do you want to learn more about?
+  <<nobr>>
+    <ul>
+    <<for _key range Object.keys($pointsOfInterest)>>
+      /* For some reason, I can't index by both key and value and I'm not sure why */
+        <<set $poi to _key + ": (" + $pointsOfInterest[_key].lat + ", " + $pointsOfInterest[_key].long + ")">>
+      <li>
+        [[$poi | Display Location][$poi to _key]]
+      </li>
+    <</for>>
+    </ul>
+  <</nobr>>
+<</if>>
+
+/* One location passage instead of a passage per location */
+:: Display Location
+This is $poi!
+
+<<playTrack Story.get($pointsOfInterest[poi].audioName).text>>
+
+/* <<playTrack $pointsOfInterest[poi].audioName>> */
+/* <<run $history.push($poi)>> */
+
+Would you like to [[play again | Display Location]] or [[move on | Process Location]]?
+Remember: don't move on until you've made it to the next location!
+
+
+:: playTrackWidget [widget]
+<<widget 'playTrack'>>\
+    <<nobr>>
+        <<if !TrackExists($args[0])>>
+			    <<print "Error: Cannot load file \"" + $args[0] "\"." >>
+        <<else>>
+            <<print "Track \"" + $args[0] + "\" is loaded. ">>
+                <<if !isPlaying($args[0])>>
+                        <<masteraudio stop>>   
+                        <<print "Isn't playing track yet. Starting now. ">>
+                        <<audio $args[0] volume 1 play>>
+                <</if>>     
+        <</if>>
+    <</nobr>>\
+<</widget>>
+
+
+
+:: StoryScript [script]
+// initialization, on loop (ideally)
+window.init = function () {
+  if ("geolocation" in navigator && typeof navigator.geolocation.getCurrentPosition === "function") {
+  // setup the success and error callbacks as well as the options object
+  var positionSuccess = function (position) {
+  // you could simply assign the `coords` object to `$Location`,
+  // however, this assigns only the latitude and longitude since
+  // that seems to have been what you were attempting to do before
+  state.active.variables["Location"] = {
+  latitude : position.coords.latitude,
+  longitude : position.coords.longitude
+  };
+  // access would be like: $Location.latitude and $Location.longitude
+  },
+  positionError = function (error) {
+  /* currently a no-op; code that handles errors */
+    console.warn(`ERROR(${error.code}): ${error.message}`);
+  },
+  positionOptions = {
+  timeout: 31000,
+  enableHighAccuracy: true,
+  maximumAge : 2000 // (in ms) cached results may not be older than 1 minute
+  // this can probably be tweaked upwards a bit
+  };
+
+  // since the API is asynchronous, we give `$Location` an initial value, so
+  // trying to access it immediately causes no issues if the first callback
+  // takes a while
+  state.active.variables["Location"] = { latitude : 0, longitude : 0 };
+
+  // make an initial call for a position while the system is still starting
+  // up, so we can get real data ASAP (probably not strictly necessary as the
+  // first call via the `predisplay` task [below] should happen soon enough)
+  navigator.geolocation.getCurrentPosition(
+  positionSuccess,
+  positionError,
+  positionOptions
+  );
+
+  // register a `predisplay` task which attempts to update the `$Location`
+  // variable whenever passage navigation occurs
+  predisplay["geoGetCurrentPosition"] = function () {
+  navigator.geolocation.getCurrentPosition(
+  positionSuccess,
+  positionError,
+  positionOptions
+  );
+  };
+  } else {
+  /* currently a no-op; code that handles a missing/disabled geolocation API */
+    state.active.variables["Location"] = { latitude : -1, longitude : -1 
+  }
+}};
+ 
+// (function approxEqual(a, b, allowedDiff) {
+window.approxEqual = function (a, b, allowedDiff) { // allowedDiff must always be > 0
+if (a === b) { // handles various "exact" edge cases
+return true;
+}
+allowedDiff = allowedDiff || 0.0005;
+return Math.abs(a - b) < allowedDiff;
+};
+// }());
+
+/* Code from https://electricarchaeology.ca/2015/05/20/low-friction-augmented-reality/ 
+
+https://twinery.org/forum/discussion/2789/geolocation-as-trigger
+*/
+
+// set up path to enable audio to happen
+// currently unused because string interpolation with filepaths
+// are throwing fits
+window.setup_audio = function () {
+    setup.SoundPath = "audio/";
+}
+
+// Check to see if trackID is currently loaded
+window.TrackExists = function (trackID) {
+	return SimpleAudio.tracks.has(trackID);
+};
+
+// Check to see if trackID is the currently playing track
+window.isPlaying = function (trackID) {
+	var track = SimpleAudio.tracks.get(trackID);
+	return track !== null && track.isPlaying();
+};
+
+/* Code from http://twinery.org/questions/43360/how-to-add-audio-using-sugar-cube-or-html-or-anything-heeeelp 
+
+https://qjzhvmqlzvoo5lqnrvuhmg.on.drv.tw/UInv/Sample_Code.html#Music
+
+Troubleshooting fn not found: https://intfiction.org/t/function-not-defined-message-error-sugarcube/50385/6
+
+fns overview https://www.reddit.com/r/twinegames/comments/qenb6o/javascript_functions_and_sugarcube/ */

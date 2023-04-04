@@ -149,7 +149,9 @@ Otherwise, [[enable testing mode | Process Location][$isLocationLive to false]].
 :: Display Location
 This is $poi!
 
-<<playTrack $pointsOfInterest[poi].audioName>>
+<<playTrack Story.get($pointsOfInterest[poi].audioName).text>>
+
+/* <<playTrack $pointsOfInterest[poi].audioName>> */
 /* <<run $history.push($poi)>> */
 
 Would you like to [[play again | Display Location]] or [[move on | Process Location]]?

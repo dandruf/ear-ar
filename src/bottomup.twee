@@ -1,0 +1,206 @@
+/* SPECIFIC TO MY SETUP: from prototype work folder, run: ../tweego/tweego -o compiled/bottomup.html src */
+
+:: StoryTitle
+Bottom Up: Prototype 2 for Teaching Purposes
+
+:: StoryData
+{
+  "ifid": "EB95DC0D-B1A3-42C0-A187-19ED577B8AC8",
+  "format": "SugarCube",
+  "format-version": "2.30.0",
+  "start": "Start",
+  "zoom": 1
+}
+
+:: StoryInit
+/* ISSUES: data map isn't being indexed
+doing a nilch on the toggleable transcript
+once I add the location and it works then im done */
+
+/* Create data map of all story locations and associated sound files */
+<<set $pointsOfInterest to {
+	"GTower":  {
+		lat: 42.3692166,
+		long: -71.1161296,
+    audioPath: "../audio/hbs.mp3",
+    transcript: "Nick Fahy's mom?",
+	},
+  /* mp3's only apparently */
+  "LevLibrary":  {
+		lat: 42.3692166,
+		long: -71.1167583,
+    audioPath: "../audio/allston.m4a",
+    transcript: "Wind blows through trees",
+	},
+}>>;
+
+<<set $startingLocation to "GTower">>
+
+/* Loop through data map and cache all audio,
+naming it by the location key name in the map */
+<<for _key range Object.keys($pointsOfInterest)>>
+  <<cacheaudio _key $pointsOfInterest[_key].audioPath>>  
+<</for>>
+
+/* hide the reset bar on the side */
+<<run UIBar.stow()>>
+
+<<set $is_geolocation_initlialized to false>>
+
+:: Start 
+Hello! Please put your headphones into your device and select "Let's go!" when you're ready.
+[[Let's go!]]
+
+
+:: Let's go!
+Welcome to my personal map! I'm Jasmyne. Today, I'm going to share a few places around Harvard's campus that are special to me. 
+
+If you're able to walk around and navigate to the locations I mention, click on the link that says "Find my location." Please make sure that your location is turned on.
+
+Otherwise, you can select "Explore without location" and select the location you want to pretend to visit without travelling there.
+
+If you change your mind about which setting you want to be on, select the arrow on the left side of your screen and press "Restart."
+
+[[Use my location| Travel to Location][$isLocationOn to true]], or [[Don't use my location| Travel to Location][$isLocationOn to false]]?
+
+
+:: Travel to Location
+<<masteraudio stop>>   
+<<if $isLocationOn == true>>
+  <<if $is_geolocation_initlialized == false>>
+    <<script>>initGeolocation();<</script>>
+    <<set $is_geolocation_initlialized to true>>
+  <</if>>
+    <<goto [[Find my location]]>>
+<<else>>
+  <<goto [[Display all locations]]>>
+<</if>>
+
+/* Logic for tracking locations */
+:: Find my location
+Let's see where you are. Hmm...
+<<nobr>>
+  <<script>>getLocation();<</script>>
+
+  <<set $match to "None">>
+  <<for _key range Object.keys($pointsOfInterest)>>
+    <<print $Location.lat>> vs $pointsOfInterest[_key].lat
+    <<print $Location.long>> vs $pointsOfInterest[_key].long
+
+    <<if approxEqual($Location.lat, $pointsOfInterest[_key].lat)>>
+      <<if approxEqual($Location.long, $pointsOfInterest[_key].long)>>
+        <<set $match to _key>>
+        <<break>>
+      <</if>>
+    <</if>>
+  <</for>>
+
+  <<if $match == "None">>
+    It looks like you're not close to any of the locations I want to share with you.
+
+    Why don't you navigate to my first place of interest, <<print $startingLocation>>, and then [[try again|Find my location]]?
+  <<else>>
+    It looks like you're close to _key.
+    [[Learn more about this location| _key]], or [[try again| Find my location]]?
+  <</if>>
+<</nobr>>
+
+
+/* Logic for no tracking locations */
+:: Display all locations
+Which place do you want to explore?
+<<nobr>>
+  <ul>
+    <<for _key range Object.keys($pointsOfInterest)>>
+        <<set $place to _key + ": (latitude " + $pointsOfInterest[_key].lat + ", longitude " + $pointsOfInterest[_key].long + ")">>
+      <li>
+        [[$place | _key]]
+      </li>
+    <</for>>
+  </ul>
+<</nobr>>
+
+:: GTower
+<<set $location to "GTower">>
+$location
+Transcript: $pointsOfInterest[$location].transcript
+
+<<audio $location play>>
+<<link "Replay story">>
+   <<masteraudio stop>>   
+   <<audio $location play>>
+<</link>>
+[[Explore other places | Travel to Location]]
+
+
+:: LevLibrary
+<<set $location to "LevLibrary">>
+$location
+Transcript: $pointsOfInterest[$location].transcript
+
+<<audio $location play>>
+<<link "Replay story">>
+   <<masteraudio stop>>   
+   <<audio $location play>>
+<</link>>
+[[Explore other places | Travel to Location]]
+
+
+/* GOALS: make this twee program easy to look at in Twine. 
+This will be the document that students will download!
+
+1) one physical passage per point of interest and clear connections between them x
+2) Open transcript option x
+3) Testing mode available x
+4) I should actually figure out what the JS does so that it doesn't 
+  turn on location for testing mode*/
+
+:: StoryScript [script]
+// initialization, on loop (ideally)
+window.getLocation = function () {
+  if ("geolocation" in navigator && typeof navigator.geolocation.getCurrentPosition === "function") {
+  // setup the success and error callbacks as well as the options object
+  var positionSuccess = function (position) {
+  state.active.variables["Location"] = {
+  lat : position.coords.latitude,
+  long : position.coords.longitude
+  };
+  },
+  positionError = function (error) {
+  /* currently a no-op; code that handles errors */
+  },
+  positionOptions = {
+    timeout: 31000, // how long (in ms) can try to find location before aborting
+    enableHighAccuracy: true,
+    maximumAge: 0 // how old a saved location can be
+  };
+
+  // since the API is asynchronous, we give `$Location` an initial value, so
+  // trying to access it immediately causes no issues if the first callback
+  // takes a while
+  state.active.variables["Location"] = { lat : 0, long : 0 };
+
+  // make a  call for a position
+  navigator.geolocation.getCurrentPosition(
+  positionSuccess,
+  positionError,
+  positionOptions
+  );
+
+  predisplay["geoGetCurrentPosition"] = function () {
+  navigator.geolocation.getCurrentPosition(
+  positionSuccess,
+  positionError,
+  positionOptions
+  );
+  };
+}};
+ 
+// (function approxEqual(a, b, allowedDiff) {
+window.approxEqual = function (a, b, allowedDiff) { // allowedDiff must always be > 0
+if (a === b) { // handles "exact" edge cases
+return true;
+}
+allowedDiff = allowedDiff || 0.0005;
+return Math.abs(a - b) < allowedDiff;
+};
