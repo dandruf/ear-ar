@@ -1,47 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-    padding: 20px;
-    color: #333;
+font-family: 'Rubik', sans-serif;
+background-color: #f2f2f2;
+padding: 20px;
+color: #333;
+margin: 0;
 }
 
 h1 {
-    font-size: 32px;
-    color: #4a94cf;
-    margin-bottom: 20px;
+font-size: 32px;
+color: #4a94cf;
+margin-bottom: 20px;
+text-shadow: 1px 1px 2px rgba(74, 148, 207, 0.5);
 }
 
 p {
-    font-size: 18px;
-    line-height: 1.6;
+font-size: 18px;
+line-height: 1.6;
 }
 
 a {
-    color: #4a94cf;
-    text-decoration: none;
+color: #4a94cf;
+text-decoration: none;
 }
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+max-width: 800px;
+margin: 0 auto;
+background-color: #fff;
+padding: 30px;
+border-radius: 5px;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+overflow: hidden;
 }
 
 .button {
-    display: inline-block;
-    background-color: #4a94cf;
-    color: #fff;
-    padding: 10px 20px;
-    font-size: 18px;
-    border-radius: 5px;
-    text-align: center;
-    margin-top: 20px;
-    cursor: pointer;
+display: inline-block;
+background-color: #4a94cf;
+color: #fff;
+padding: 10px 20px;
+font-size: 18px;
+border-radius: 5px;
+text-align: center;
+margin-top: 20px;
+cursor: pointer;
+transition: background-color 0.3s;
 }
 
 .button:hover {
-    background-color: #3c7db7;
+background-color: #3c7db7;
+}
+
+@media only screen and (max-width: 767px) {
+body {
+    padding: 10px;
+}
+
+.container {
+    padding: 20px;
+}
+
+h1 {
+    font-size: 28px;
+}
+
+p {
+    font-size: 16px;
+}
+
+.button {
+    font-size: 16px;
+    padding: 8px 16px;
+}
 }
