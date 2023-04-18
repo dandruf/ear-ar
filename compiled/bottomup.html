@@ -219,7 +219,7 @@ If you change your mind about which setting you want to be on, select the arrow 
 &lt;&lt;nobr&gt;&gt;
   &lt;ul&gt;
     &lt;&lt;for _key range Object.keys($pointsOfInterest)&gt;&gt;
-        &lt;&lt;set $place to _key + &quot;: (latitude &quot; + $pointsOfInterest[_key].lat + &quot;, longitude &quot; + $pointsOfInterest[_key].long + &quot;)&quot;&gt;&gt;
+        &lt;&lt;set $place to _key + &quot;: (latitude: &quot; + $pointsOfInterest[_key].lat + &quot;, longitude: &quot; + $pointsOfInterest[_key].long + &quot;)&quot;&gt;&gt;
       &lt;li&gt;
         [[$place | _key]]
       &lt;/li&gt;
