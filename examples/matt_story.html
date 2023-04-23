@@ -190,7 +190,6 @@ If you change your mind about which setting you want to be on, select the arrow 
 
 /* Logic for tracking locations */</tw-passagedata><tw-passagedata pid="6" name="Find my Location" tags="" position="650,25" size="100,100">Let&#39;s see where you are. Hmm...
 &lt;&lt;nobr&gt;&gt;
-  /* My savior: https://qjzhvmqlzvoo5lqnrvuhmg.on.drv.tw/UInv/Sample_Code.html#Geolocation%20Access */
   /* Load until location gets updated. Need to split location access and location usage 
      because geolocation is an asynchronous function.  */
   &lt;&lt;if $Location.lat == 0&gt;&gt;
@@ -228,6 +227,7 @@ If you change your mind about which setting you want to be on, select the arrow 
     &lt;&lt;/for&gt;&gt;
   &lt;/ul&gt;
 &lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="8" name="Sunken Garden" tags="" position="900,25" size="100,100">&lt;&lt;set $location to &quot;Sunken Garden&quot;&gt;&gt;
+
 $location
 Transcript: &lt;&lt;print $pointsOfInterest[$location].transcript&gt;&gt;
 
@@ -237,6 +237,7 @@ Transcript: &lt;&lt;print $pointsOfInterest[$location].transcript&gt;&gt;
    &lt;&lt;audio $pointsOfInterest[$location].audioPath play&gt;&gt;
 &lt;&lt;/link&gt;&gt;
 [[Explore other places | Travel to Location]]</tw-passagedata><tw-passagedata pid="9" name="Agassiz Theater" tags="" position="1025,25" size="100,100">&lt;&lt;set $location to &quot;Agassiz Theater&quot;&gt;&gt;
+
 $location
 Transcript: &lt;&lt;print $pointsOfInterest[$location].transcript&gt;&gt;
 
@@ -246,6 +247,7 @@ Transcript: &lt;&lt;print $pointsOfInterest[$location].transcript&gt;&gt;
    &lt;&lt;audio $pointsOfInterest[$location].audioPath play&gt;&gt;
 &lt;&lt;/link&gt;&gt;
 [[Explore other places | Travel to Location]]</tw-passagedata><tw-passagedata pid="10" name="Graduate School of Education" tags="" position="1150,25" size="100,100">&lt;&lt;set $location to &quot;Graduate School of Education&quot;&gt;&gt;
+
 $location
 Transcript: &lt;&lt;print $pointsOfInterest[$location].transcript&gt;&gt;
 

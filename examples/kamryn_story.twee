@@ -1,0 +1,215 @@
+:: StoryTitle
+Kamryn's Story
+
+
+:: StoryData
+{
+  "ifid": "EB95DC0D-B1A3-42C0-A187-19ED577B8AC8",
+  "format": "SugarCube",
+  "format-version": "2.36.1",
+  "start": "Start",
+  "zoom": 1
+}
+
+
+:: /* SPECIFIC TO MY SETUP: from prototype work folder, run: ../tweego/tweego -o compiled/bottomup.html src */ {"position":"25,25","size":"100,100"}
+
+
+
+:: Agassiz Theater {"position":"1025,25","size":"100,100"}
+<<set $location to "Agassiz Theater">>
+$location
+
+Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+<<audio $pointsOfInterest[$location].audioPath play>>
+<<link "Replay story">>
+   <<masteraudio stop>>   
+   <<audio $pointsOfInterest[$location].audioPath play>>
+<</link>>
+[[Explore other places | Travel to Location]]
+
+
+:: Display all locations {"position":"775,25","size":"100,100"}
+Which place do you want to explore?
+<<nobr>>
+  <ul>
+    <<for _key range Object.keys($pointsOfInterest)>>
+        <<set $place to _key + ": (latitude: " + $pointsOfInterest[_key].lat + ", longitude: " + $pointsOfInterest[_key].long + ")">>
+      <li>
+        [[$place | _key]]
+      </li>
+    <</for>>
+  </ul>
+<</nobr>>
+
+
+:: Find my Location {"position":"650,25","size":"100,100"}
+Let's see where you are. Hmm...
+<<nobr>>
+  /* My savior: https://qjzhvmqlzvoo5lqnrvuhmg.on.drv.tw/UInv/Sample_Code.html#Geolocation%20Access */
+  /* Load until location gets updated. Need to split location access and location usage 
+     because geolocation is an asynchronous function.  */
+  <<if $Location.lat == 0>>
+    <<goto [[Find my Location]]>>
+  <</if>>
+  <<set $match to "None">>
+  <<for _key range Object.keys($pointsOfInterest)>>
+    <<if approxEqual($Location.lat, $pointsOfInterest[_key].lat)>>
+      <<if approxEqual($Location.long, $pointsOfInterest[_key].long)>>
+        Matching _key!
+        <<set $match to _key>>
+        <<break>>
+      <</if>>
+    <</if>>
+  <</for>>
+
+  <<if $match == "None">>
+    It looks like you're not close to any of the locations I want to share with you.
+    Why don't you navigate to my first place of interest, <<print $startingLocation>>, and then [[try again|Find my Location]]?
+  <<else>>
+    It looks like you're close to _key.
+    [[Learn more about this location| _key]], or [[try again| Travel to Location]]?
+  <</if>>
+<</nobr>>
+
+
+/* Logic for not tracking locations */
+
+
+:: Graduate School of Education {"position":"1150,25","size":"100,100"}
+<<set $location to "Graduate School of Education">>
+$location
+
+Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+<<audio $pointsOfInterest[$location].audioPath play>>
+<<link "Replay story">>
+   <<masteraudio stop>>   
+   <<audio $pointsOfInterest[$location].audioPath play>>
+<</link>>
+[[Explore other places | Travel to Location]]
+
+
+:: Let's go! {"position":"400,25","size":"100,100"}
+Welcome to my personal map! I'm Kamryn. Today, I'm going to share a few places around Harvard's campus that are special to me. 
+
+If you're able to walk around and navigate to the locations I mention, click on the link that says "Find my Location." Please make sure that your location is turned on.
+
+Otherwise, you can select "Don't use my location" and select the location you want to learn about without travelling there.
+
+If you change your mind about which setting you want to be on, select the arrow on the left side of your screen and press "Restart."
+
+[[Use my location| Travel to Location][$isLocationOn to true]], or [[Don't use my location| Travel to Location][$isLocationOn to false]]?
+
+<<audio intro play>>
+
+
+:: Start {"position":"275,25","size":"100,100"}
+Hello! Please put your headphones into your device and select "Let's go!" when you're ready.
+[[Let's go!]]
+
+
+:: StoryInit {"position":"150,25","size":"100,100"}
+/* Create data map of all story locations and associated sound files */
+<<set $pointsOfInterest to {
+	"Graduate School of Education":  {
+		lat: 42.375358,
+		long: -71.121691,
+    audioPath: "../audio/kamryn_hgse.mp3",
+    transcript: "This semester I had the really awesome opportunity to take my first education course here at Harvard, and it's really been a dream come true. I knew from the get-go that I wanted to study computer science here, but I was kind of devastated because I didn't think I'd have the opportunity to get to explore the second kind of passion of mine, which is also sharing my love of computer science. Sharing the superpower of coding with other people through education, I was incredibly lucky enough to be involved in a program at the age of 13 that supported me and my computer science journey and really made me fall in love with the field. And ever since, I've had a passion to kind of give back to other people who might be interested in the field of computer science as well. I really believe that the culture in which you learn something will determine whether or not you like that thing or your overall thoughts about that topic. And so for me, computer science and education has always really been this topic that. I want people to think it's creative and fun and I want people to be able to use CS to pretty much accomplish any goal that they have or express any passion that they have outside of computer science itself. And so getting a chance to take a class up here this semester has been super enlightening, and I'm really excited to be taking more in the future."
+	},
+  "Agassiz Theater":  {
+		lat: 42.3760466,
+		long: -71.1236329,
+    audioPath: "../audio/kamryn_ag.mp3",
+    transcript: "There's this concept called the Butterfly Effect, which is essentially that one small action you do today can have really massive impacts on the line. Now this is usually used in movies and TV shows and I never used to believe in it until very recently, honestly, when I went on a run with the running club back on my second day of freshman year. And I got really lost because I couldn't keep up with them, which is totally my bad. And I ended up finding myself here kind of in this big, really beautiful green area outside of the admissions office and by the theater. And I kept asking myself, how in the world am I actually here? I'm studying my passion in computer science at my absolute dream school. How in the world did you know this all work out the way it did? And I genuinely think it all ties back to your day. I skipped 7th grade to play Minecraft and my mom pretty much was like no, you're not allowed to play Minecraft if you're homesick from school. And that day, I decided to apply to this coding program that pretty much sparked my entire passion and love of education at the same time. And so just sitting here thinking about that, pretty crazy."
+	},
+  "Sunken Garden":  {
+		lat: 42.3757343,
+		long: -71.1224232,
+    audioPath: "../audio/kamryn_sunkengarden.mp3",
+    transcript: "I'm sitting in front of a really massive and really beautiful tree right now that's sort of surrounded by these blue, kind of purple, flowers, and I'm thinking about the fact that all of my friends back at home somehow have this really fun fact slash knowledge about all sorts of different trees and flowers. My best friend works at this flower shop, and I know for sure that she would be like pointing to all of the plants around me and like identify them, but instead I can just describe them as really pretty and really kind of purple slash blue as well as this massive tree. One of my other good friends can walk into a forest back at home and literally point at every single tree and identify the type or identify its name. And I don't have that skill. But sitting here right now in the Sunken Gardens on my way in between my education class and my French class really just reminds me of how much I miss them and how much I miss walking through the woods near home as well as just sitting by the lake. The sound of the fountain really reminds me of just sitting outside, and so it's a beautiful day outside. I'm going to enjoy it a little bit longer. "
+	}
+}>>
+
+<<cacheaudio intro "../audio/kamryn_intro.mp3">>  
+
+<<set $startingLocation to "Graduate School of Education">>
+
+/* Loop through data map and cache all audio,
+naming it by the location key name in the map */
+<<for _key range Object.keys($pointsOfInterest)>>
+  <<cacheaudio $pointsOfInterest[_key].audioPath $pointsOfInterest[_key].audioPath>>  
+<</for>>
+
+/* hide the reset bar on the side */
+<<run UIBar.stow()>>
+
+
+:: Sunken Garden {"position":"900,25","size":"100,100"}
+<<set $location to "Sunken Garden">>
+$location
+
+Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+<<audio $pointsOfInterest[$location].audioPath play>>
+<<link "Replay story">>
+   <<masteraudio stop>>   
+   <<audio $pointsOfInterest[$location].audioPath play>>
+<</link>>
+[[Explore other places | Travel to Location]]
+
+
+:: Travel to Location {"position":"525,25","size":"100,100"}
+<<masteraudio stop>>   
+<<if $isLocationOn == true>>
+  <<script>>getLocation();<</script>>
+  <<goto [[Find my Location]]>>
+<<else>>
+  <<goto [[Display all locations]]>>
+<</if>>
+
+/* Logic for tracking locations */
+
+
+:: StoryScript [script]
+// initialization, on loop (ideally)
+window.getLocation = function () {
+  if ("geolocation" in navigator && typeof navigator.geolocation.getCurrentPosition === "function") {
+  // setup the success and error callbacks as well as the options object
+  var positionSuccess = function (position) {
+    state.active.variables["Location"] = {
+    lat : position.coords.latitude,
+    long : position.coords.longitude
+    };
+    console.log(`Suceeded in getting location; lat: ${state.active.variables["Location"].lat} long: ${state.active.variables["Location"].long}`)
+  },
+  positionError = function (error) {
+    console.log(`ERROR(${error}): ${error.message}`)
+  },
+  positionOptions = {
+    timeout: 31000, // how long (in ms) can try to find location before aborting
+    enableHighAccuracy: true,
+    maximumAge: 0 // how old a saved location can be
+  };
+
+  state.active.variables["Location"] = { lat : 0, long : 0 };
+
+  console.log("Trying to find location")
+  // make a  call for a position
+  navigator.geolocation.getCurrentPosition(
+  positionSuccess,
+  positionError,
+  positionOptions
+  );
+}};
+ 
+// (function approxEqual(a, b, allowedDiff) {
+window.approxEqual = function (a, b, allowedDiff) { // allowedDiff must always be > 0
+if (a === b) { // handles "exact" edge cases
+return true;
+}
+allowedDiff = allowedDiff || 0.0005;
+return Math.abs(a - b) < allowedDiff;
+};

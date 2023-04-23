@@ -1,0 +1,214 @@
+:: StoryTitle
+Matt's Story
+
+
+:: StoryData
+{
+  "ifid": "260baa72-5b0b-4a8b-a90c-697eb5fe1a60",
+  "format": "SugarCube",
+  "format-version": "2.36.1",
+  "start": "Start",
+  "zoom": 1
+}
+
+
+:: /* SPECIFIC TO MY SETUP: from prototype work folder, run: ../tweego/tweego -o compiled/bottomup.html src */ {"position":"25,25","size":"100,100"}
+
+
+
+:: Agassiz Theater {"position":"1025,25","size":"100,100"}
+<<set $location to "Agassiz Theater">>
+
+$location
+Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+<<audio $pointsOfInterest[$location].audioPath play>>
+<<link "Replay story">>
+   <<masteraudio stop>>   
+   <<audio $pointsOfInterest[$location].audioPath play>>
+<</link>>
+[[Explore other places | Travel to Location]]
+
+
+:: Display all locations {"position":"775,25","size":"100,100"}
+Which place do you want to explore?
+<<nobr>>
+  <ul>
+    <<for _key range Object.keys($pointsOfInterest)>>
+        <<set $place to _key + ": (latitude: " + $pointsOfInterest[_key].lat + ", longitude: " + $pointsOfInterest[_key].long + ")">>
+      <li>
+        [[$place | _key]]
+      </li>
+    <</for>>
+  </ul>
+<</nobr>>
+
+
+:: Find my Location {"position":"650,25","size":"100,100"}
+Let's see where you are. Hmm...
+<<nobr>>
+  /* Load until location gets updated. Need to split location access and location usage 
+     because geolocation is an asynchronous function.  */
+  <<if $Location.lat == 0>>
+    <<goto [[Find my Location]]>>
+  <</if>>
+  <<set $match to "None">>
+  <<for _key range Object.keys($pointsOfInterest)>>
+    <<if approxEqual($Location.lat, $pointsOfInterest[_key].lat)>>
+      <<if approxEqual($Location.long, $pointsOfInterest[_key].long)>>
+        Matching _key!
+        <<set $match to _key>>
+        <<break>>
+      <</if>>
+    <</if>>
+  <</for>>
+
+  <<if $match == "None">>
+    It looks like you're not close to any of the locations I want to share with you.
+    Why don't you navigate to my first place of interest, <<print $startingLocation>>, and then [[try again|Find my Location]]?
+  <<else>>
+    It looks like you're close to _key.
+    [[Learn more about this location| _key]], or [[try again| Travel to Location]]?
+  <</if>>
+<</nobr>>
+
+
+/* Logic for not tracking locations */
+
+
+:: Graduate School of Education {"position":"1150,25","size":"100,100"}
+<<set $location to "Graduate School of Education">>
+
+$location
+Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+<<audio $pointsOfInterest[$location].audioPath play>>
+<<link "Replay story">>
+   <<masteraudio stop>>   
+   <<audio $pointsOfInterest[$location].audioPath play>>
+<</link>>
+[[Explore other places | Travel to Location]]
+
+
+:: Let's go! {"position":"400,25","size":"100,100"}
+Welcome to my personal map. I'm Matt. Today, I'm going to share a few places around Harvard's campus that are special to me. 
+
+If you're able to walk around and navigate to the locations I mention, click on the link that says "Find my Location." Please make sure that your location is turned on.
+
+Otherwise, you can select "Don't use my location" and select the location you want to learn about without travelling there.
+
+If you change your mind about which setting you want to be on, select the arrow on the left side of your screen and press "Restart."
+
+[[Use my location| Travel to Location][$isLocationOn to true]], or [[Don't use my location| Travel to Location][$isLocationOn to false]]?
+
+<<audio intro play>>
+
+
+:: Start {"position":"275,25","size":"100,100"}
+Hello! Please put your headphones into your device and select "Let's go!" when you're ready.
+[[Let's go!]]
+
+
+:: StoryInit {"position":"150,25","size":"100,100"}
+/* Create data map of all story locations and associated sound files */
+<<set $pointsOfInterest to {
+	"Graduate School of Education":  {
+		lat: 42.375358,
+		long: -71.121691,
+    audioPath: "../audio/matt_hgse.mp3",
+    transcript: "At sunset, by the time I reached Longfellow Hall of the Graduate School of Arts and Education. It faces the setting sun, the only one building to do so in the Radcliffe quadrangle. So its facade is the best illuminated, whereas the others are lost in shadow. All of the other buildings seem to face it as if in submission, as windows catch reflections of the other buildings, giving dark shadows to the light that passes through them. Four smokestacks sit on top, unused, perhaps for several decades. There's a light on on the top floor. The only one. I wonder who's working up there. Something's playing on a projector behind one of the large glass windows. It's hard to see. The man and woman stand in front of it, reading the inscription on the wall."
+	},
+  "Agassiz Theater":  {
+		lat: 42.3760466,
+		long: -71.1236329,
+    audioPath: "../audio/matt_ag.mp3",
+    transcript: "I'm standing in the middle of the Radcliffe Quad, looking up at the Aggassiz Theater, or The Ag, as coiend by Harvard students. It sits in a dark corner of campus overlooking an empty courtyard. Birds chirp in the trees around me, sparsely surrounding the yard, and I hear the hum of traffic on the streets outside of the yard’s gates. A few students are coming out of the building, but its dark façade lit by only a few lights gives it a foreboding appearance. I was once here for a tour long ago before I was admitted to the school, but have not come back. But I can say from looking at the exterior, it does not look Fun. Home looks so much farther away when I'm in this place. I feel a chill for some reason."
+	},
+  "Sunken Garden":  {
+		lat: 42.3757343,
+		long: -71.1224232,
+    audioPath: "../audio/matt_sunkengarden.mp3",
+    transcript: "There's grass to be found across Harvard campus, but the Sunken Garden in Radcliffe Quadrangle is the only place that really smells like nature. Maybe it's the fertilizer they use. I hear the birds chirping in the trees above me, and I hear the rumble of the traffic just outside the walls, louder than it was by the Ag. Few people frequent here. I've seen no one around me, except a small bird, sitting in the grass. It's dark. It's past sunset, so everything is flat and lost in shadow. But I can still make out the yellow of the flowers on the ground and the white of the flowers in the trees."
+	}
+}>>
+
+<<cacheaudio intro "../audio/matt_intro.mp3">>  
+
+<<set $startingLocation to "Graduate School of Education">>
+
+/* Loop through data map and cache all audio,
+naming it by the location key name in the map */
+<<for _key range Object.keys($pointsOfInterest)>>
+  <<cacheaudio $pointsOfInterest[_key].audioPath $pointsOfInterest[_key].audioPath>>  
+<</for>>
+
+/* hide the reset bar on the side */
+<<run UIBar.stow()>>
+
+
+:: Sunken Garden {"position":"900,25","size":"100,100"}
+<<set $location to "Sunken Garden">>
+
+$location
+Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+<<audio $pointsOfInterest[$location].audioPath play>>
+<<link "Replay story">>
+   <<masteraudio stop>>   
+   <<audio $pointsOfInterest[$location].audioPath play>>
+<</link>>
+[[Explore other places | Travel to Location]]
+
+
+:: Travel to Location {"position":"525,25","size":"100,100"}
+<<masteraudio stop>>   
+<<if $isLocationOn == true>>
+  <<script>>getLocation();<</script>>
+  <<goto [[Find my Location]]>>
+<<else>>
+  <<goto [[Display all locations]]>>
+<</if>>
+
+/* Logic for tracking locations */
+
+
+:: StoryScript [script]
+// initialization, on loop (ideally)
+window.getLocation = function () {
+  if ("geolocation" in navigator && typeof navigator.geolocation.getCurrentPosition === "function") {
+  // setup the success and error callbacks as well as the options object
+  var positionSuccess = function (position) {
+    state.active.variables["Location"] = {
+    lat : position.coords.latitude,
+    long : position.coords.longitude
+    };
+    console.log(`Suceeded in getting location; lat: ${state.active.variables["Location"].lat} long: ${state.active.variables["Location"].long}`)
+  },
+  positionError = function (error) {
+    console.log(`ERROR(${error}): ${error.message}`)
+  },
+  positionOptions = {
+    timeout: 31000, // how long (in ms) can try to find location before aborting
+    enableHighAccuracy: true,
+    maximumAge: 0 // how old a saved location can be
+  };
+
+  state.active.variables["Location"] = { lat : 0, long : 0 };
+
+  console.log("Trying to find location")
+  // make a  call for a position
+  navigator.geolocation.getCurrentPosition(
+  positionSuccess,
+  positionError,
+  positionOptions
+  );
+}};
+ 
+// (function approxEqual(a, b, allowedDiff) {
+window.approxEqual = function (a, b, allowedDiff) { // allowedDiff must always be > 0
+if (a === b) { // handles "exact" edge cases
+return true;
+}
+allowedDiff = allowedDiff || 0.0005;
+return Math.abs(a - b) < allowedDiff;
+};
