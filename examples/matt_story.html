@@ -147,7 +147,7 @@ return Math.abs(a - b) < allowedDiff;
   &quot;Agassiz Theater&quot;:  {
 		lat: 42.3760466,
 		long: -71.1236329,
-    audioPath: &quot;../audio/matt_ag.m4a&quot;,
+    audioPath: &quot;../audio/matt_ag.mp3&quot;,
     transcript: &quot;I&#39;m standing in the middle of the Radcliffe Quad, looking up at the Aggassiz Theater, or The Ag, as coiend by Harvard students. It sits in a dark corner of campus overlooking an empty courtyard. Birds chirp in the trees around me, sparsely surrounding the yard, and I hear the hum of traffic on the streets outside of the yard’s gates. A few students are coming out of the building, but its dark façade lit by only a few lights gives it a foreboding appearance. I was once here for a tour long ago before I was admitted to the school, but have not come back. But I can say from looking at the exterior, it does not look Fun. Home looks so much farther away when I&#39;m in this place. I feel a chill for some reason.&quot;
 	},
   &quot;Sunken Garden&quot;:  {
@@ -180,7 +180,7 @@ If you change your mind about which setting you want to be on, select the arrow 
 
 [[Use my location| Travel to Location][$isLocationOn to true]], or [[Don&#39;t use my location| Travel to Location][$isLocationOn to false]]?
 
-&lt;&lt;play intro&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="Travel to Location" tags="" position="525,25" size="100,100">&lt;&lt;masteraudio stop&gt;&gt;   
+&lt;&lt;audio intro&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="Travel to Location" tags="" position="525,25" size="100,100">&lt;&lt;masteraudio stop&gt;&gt;   
 &lt;&lt;if $isLocationOn == true&gt;&gt;
   &lt;&lt;script&gt;&gt;getLocation();&lt;&lt;/script&gt;&gt;
   &lt;&lt;goto [[Find my Location]]&gt;&gt;

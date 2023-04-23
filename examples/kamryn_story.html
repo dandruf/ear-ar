@@ -147,7 +147,7 @@ return Math.abs(a - b) < allowedDiff;
   &quot;Agassiz Theater&quot;:  {
 		lat: 42.3760466,
 		long: -71.1236329,
-    audioPath: &quot;../audio/kamryn_ag.m4a&quot;,
+    audioPath: &quot;../audio/kamryn_ag.mp3&quot;,
     transcript: &quot;There&#39;s this concept called the Butterfly Effect, which is essentially that one small action you do today can have really massive impacts on the line. Now this is usually used in movies and TV shows and I never used to believe in it until very recently, honestly, when I went on a run with the running club back on my second day of freshman year. And I got really lost because I couldn&#39;t keep up with them, which is totally my bad. And I ended up finding myself here kind of in this big, really beautiful green area outside of the admissions office and by the theater. And I kept asking myself, how in the world am I actually here? I&#39;m studying my passion in computer science at my absolute dream school. How in the world did you know this all work out the way it did? And I genuinely think it all ties back to your day. I skipped 7th grade to play Minecraft and my mom pretty much was like no, you&#39;re not allowed to play Minecraft if you&#39;re homesick from school. And that day, I decided to apply to this coding program that pretty much sparked my entire passion and love of education at the same time. And so just sitting here thinking about that, pretty crazy.&quot;
 	},
   &quot;Sunken Garden&quot;:  {
@@ -180,7 +180,7 @@ If you change your mind about which setting you want to be on, select the arrow 
 
 [[Use my location| Travel to Location][$isLocationOn to true]], or [[Don&#39;t use my location| Travel to Location][$isLocationOn to false]]?
 
-&lt;&lt;play intro&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="Travel to Location" tags="" position="525,25" size="100,100">&lt;&lt;masteraudio stop&gt;&gt;   
+&lt;&lt;audio intro&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="Travel to Location" tags="" position="525,25" size="100,100">&lt;&lt;masteraudio stop&gt;&gt;   
 &lt;&lt;if $isLocationOn == true&gt;&gt;
   &lt;&lt;script&gt;&gt;getLocation();&lt;&lt;/script&gt;&gt;
   &lt;&lt;goto [[Find my Location]]&gt;&gt;
@@ -229,6 +229,7 @@ If you change your mind about which setting you want to be on, select the arrow 
   &lt;/ul&gt;
 &lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="8" name="Sunken Garden" tags="" position="900,25" size="100,100">&lt;&lt;set $location to &quot;Sunken Garden&quot;&gt;&gt;
 $location
+
 Transcript: &lt;&lt;print $pointsOfInterest[$location].transcript&gt;&gt;
 
 &lt;&lt;audio $pointsOfInterest[$location].audioPath play&gt;&gt;
@@ -238,6 +239,7 @@ Transcript: &lt;&lt;print $pointsOfInterest[$location].transcript&gt;&gt;
 &lt;&lt;/link&gt;&gt;
 [[Explore other places | Travel to Location]]</tw-passagedata><tw-passagedata pid="9" name="Agassiz Theater" tags="" position="1025,25" size="100,100">&lt;&lt;set $location to &quot;Agassiz Theater&quot;&gt;&gt;
 $location
+
 Transcript: &lt;&lt;print $pointsOfInterest[$location].transcript&gt;&gt;
 
 &lt;&lt;audio $pointsOfInterest[$location].audioPath play&gt;&gt;
@@ -247,6 +249,7 @@ Transcript: &lt;&lt;print $pointsOfInterest[$location].transcript&gt;&gt;
 &lt;&lt;/link&gt;&gt;
 [[Explore other places | Travel to Location]]</tw-passagedata><tw-passagedata pid="10" name="Graduate School of Education" tags="" position="1150,25" size="100,100">&lt;&lt;set $location to &quot;Graduate School of Education&quot;&gt;&gt;
 $location
+
 Transcript: &lt;&lt;print $pointsOfInterest[$location].transcript&gt;&gt;
 
 &lt;&lt;audio $pointsOfInterest[$location].audioPath play&gt;&gt;
