@@ -180,7 +180,7 @@ If you change your mind about which setting you want to be on, select the arrow 
 
 [[Use my location| Travel to Location][$isLocationOn to true]], or [[Don&#39;t use my location| Travel to Location][$isLocationOn to false]]?
 
-&lt;&lt;audio intro&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="Travel to Location" tags="" position="525,25" size="100,100">&lt;&lt;masteraudio stop&gt;&gt;   
+&lt;&lt;audio intro play&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="Travel to Location" tags="" position="525,25" size="100,100">&lt;&lt;masteraudio stop&gt;&gt;   
 &lt;&lt;if $isLocationOn == true&gt;&gt;
   &lt;&lt;script&gt;&gt;getLocation();&lt;&lt;/script&gt;&gt;
   &lt;&lt;goto [[Find my Location]]&gt;&gt;
