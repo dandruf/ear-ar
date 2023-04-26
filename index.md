@@ -29,5 +29,5 @@ In my own K-12 education, technology classes always took place indoors in the co
 
 ## What (do you have so far)?
 Currently, I have a few things that I'd like to highlight about my project:
-1) the example Twine stories ([Kamryn's](examples/kamryn_story.twee), [Matthew's](examples/matthew_story.twee))
-2) the resulting audio experiences ([Kamryn's](examples/kamryn_story.html), [Matthew's](examples/matthew_story.html))
+1. the example Twine stories ([Kamryn's](examples/kamryn_story.twee), [Matthew's](examples/matthew_story.twee))
+2. the resulting audio experiences ([Kamryn's](examples/kamryn_story.html), [Matthew's](examples/matthew_story.html))
