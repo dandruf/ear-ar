@@ -4,17 +4,17 @@ A Spring 2023 CS 196 / EDU T217 Final Project by Jasmyne Roberts
 ## What (is this)?
 This final project is intended to be an interdisciplinary workshop guide that uses location-based audio stories to encourage students to think critically about the relationships between technology, the self, and society. With this guide and instructor guidance, workshop participants will create and share their own mini audio narratives and engage in discussion about them. Over the course of the workshop, students will be encouraged to think about the following questions, categorized by topic.
 
-### Technology
+**Technology**
 * How can I use pattern matching to make sense of new code in an unfamiliar programming language? How can I apply my current technical knowledge to new and unfamiliar problems?
 * How can technology connect people together in the real world?
 * What does it mean to tell or consume a story?
 
-### Self
+**Self**
 * How do I feel about the physical spaces around me?
 * How can I clearly articulate my thoughts, feelings, and experiences for other people to hear?
 * What can I gain from being more aware of everyday spaces?
 
-### Society
+**Society**
 * What types of backgrounds and stories surround me?
 * What makes me similar to and different from people around me?
 * Why might I have an experience, reaction, or memory about a physical location that differs from others around me?
