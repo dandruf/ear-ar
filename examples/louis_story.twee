@@ -1,0 +1,225 @@
+:: StoryTitle
+Louis's Story
+
+
+:: StoryData
+{
+  "ifid": "9FB66A5E-1E0A-49BD-9E6C-45E68287A506",
+  "format": "SugarCube",
+  "format-version": "2.36.1",
+  "start": "Start",
+  "zoom": 1
+}
+
+
+:: StoryInit {"position":"25,25","size":"100,100"}
+/* Create data map of all story locations and associated sound files */
+<<set $pointsOfInterest to {
+	"Graduate School of Education":  {
+		lat: 42.375358,
+		long: -71.121691,
+    audioPath: "../audio/louis_hgse.mp3",
+    transcript: "To me, the Graduate School of Education represents a lot of unrealized potential. I kind of always flirted with the idea of being a teacher, but I never took a single class through the Ed Secondary or whatever. I always was told that the library inside was the best study space on campus and I would walk by it every day that I had a tour or a theater rehearsal, because it's right on Brattle St. and always look inside and think how beautiful it was and how much I regretted not studying there more, but I never did anything to change that. I think that it just exists as a fun little concept in my head and I didn't want to change that. I didn't want to make it real because for now it just exists as what could’ve been."
+	},
+  "Agassiz Theater":  {
+		lat: 42.3760466,
+		long: -71.1236329,
+    audioPath: "../audio/louis_ag.mp3",
+    transcript: "I have spent a lot of my Harvard career going in and out of Agassiz House, or the Ag, as anyone here calls it for short. For starters, this is home to admissions tours, which I got started with last summer, and every single weekday I would be giving tours out of this building. I would interact with 300 tourists a single day, and just like that 300 strangers who had never seen my face or heard my voice would know my name and my story and my past and present and future. It's morbid, something that was a little less personal, but still very personally fulfilling. On the second floor of the Ag is a beautiful theater, which I helped do sound design for for Legally Blondes just last last fall, I guess. I had never worked technical theater before, but getting to work on a project start to finish and getting to build something beautiful, even if temporary, is one of the most rewarding experiences that I've had here at Harvard."
+	},
+  "Sunken Garden":  {
+		lat: 42.3757343,
+		long: -71.1224232,
+    audioPath: "../audio/louis_sunkengarden.mp3",
+    transcript: "Our next stop is the sunken garden. You can hear a fountain in the background, sorry. I don't have tons of memories with the entirety of Radcliffe, but the most vivid recollection I have of the SGnken garden is freshman year. My very first headshots that I took on campus were right here for Mamma Mia. I was always a very flamboyant person in high school, but I didn't really let it show physically. I remember, for these headshots, they told us to go for something beachy and I wanted to wear shorts, and I made the decision that I was going to shave my legs because it worked with how I wanted my gender expression, even if I’m a cis guy, it just felt right. So, the very first photos of me with shaven legs were right here in the Sunken Garden. I just associate it with being myself and being calm and centered and me."
+	}
+}>>
+
+/* In addition to loading the location audio, load the audio for the introductory statement as well. */
+<<cacheaudio intro "../audio/louis_intro.mp3">>  
+
+/* Loop through data map and cache all audio, naming it by the location key name in the map */
+<<for _key range Object.keys($pointsOfInterest)>>
+  <<cacheaudio $pointsOfInterest[_key].audioPath $pointsOfInterest[_key].audioPath>>  
+<</for>>
+
+/* Collapse the reset bar to the side */
+<<run UIBar.stow()>>
+
+
+:: Start {"position":"150,25","size":"100,100"}
+Hello! Please put your headphones into your device and select "Let's go!" when you're ready.
+[[Let's go!]]
+
+
+:: Let's go! {"position":"275,25","size":"100,100"}
+[[Use my location| Travel to Location][$isLocationOn to true]], or [[Don't use my location| Travel to Location][$isLocationOn to false]]?
+
+Transcript: Welcome to my personal map! I'm Louis. Today, I'm going to share a few places around Harvard's campus that are special to me. 
+
+If you're able to walk around and navigate to the locations I mention, click on the link that says "Find my Location." Please make sure that your location is turned on.
+
+Otherwise, you can select "Don't use my location" and select the location you want to learn about without travelling there.
+
+If you change your mind about which setting you want to be on, select the arrow on the left side of your screen and press "Restart."
+
+<<audio intro play>>
+
+
+:: Travel to Location {"position":"400,25","size":"100,100"}
+<<masteraudio stop>>   
+<<if $isLocationOn == true>>
+  <<script>>getLocation();<</script>>
+  <<goto [[Find my Location]]>>
+<<else>>
+  <<goto [[Display all locations]]>>
+<</if>>
+
+
+:: Find my Location {"position":"525,25","size":"100,100"}
+/* Logic for tracking locations */
+<<nobr>>
+  /* Load until location gets updated. Need to split location access and location usage 
+     because geolocation is an asynchronous function.  */
+  <<if $Location.lat == 0>>
+    <<goto [[Find my Location]]>>
+  <</if>>
+  <<set $match to "None">>
+  <<for _key range Object.keys($pointsOfInterest)>>
+    <<if approxEqual($Location.lat, $pointsOfInterest[_key].lat)>>
+      <<if approxEqual($Location.long, $pointsOfInterest[_key].long)>>
+        <<set $match to _key>>
+        <<break>>
+      <</if>>
+    <</if>>
+  <</for>>
+
+  <<if $match == "None">>
+    It looks like you're not close to any of the locations I want to share with you.
+    Why don't you make your way to any of the following locations, and then [[try again|Find my Location]]?
+      <ul>
+        <<for _key range Object.keys($pointsOfInterest)>>
+            <<set $place to _key + ": (latitude: " + $pointsOfInterest[_key].lat + ", longitude: " + $pointsOfInterest[_key].long + ")">>
+          <li>
+            $place
+          </li>
+        <</for>>
+      </ul>
+  <<else>>
+    It looks like you're close to _key.
+    [[Learn more about this location| _key]], or [[try again| Travel to Location]]?
+  <</if>>
+<</nobr>>
+
+
+:: Display all locations {"position":"650,25","size":"100,100"}
+/* Logic for not tracking locations */
+Which place do you want to explore?
+<<nobr>>
+  <ul>
+    <<for _key range Object.keys($pointsOfInterest)>>
+        <<set $place to _key + ": (latitude: " + $pointsOfInterest[_key].lat + ", longitude: " + $pointsOfInterest[_key].long + ")">>
+      <li>
+        [[$place | _key]]
+      </li>
+    <</for>>
+  </ul>
+<</nobr>>
+
+
+:: Graduate School of Education {"position":"1025,25","size":"100,100"}
+<<nobr>>
+  <<set $location to "Graduate School of Education">>
+  Welcome to $location.
+
+  Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+  <<audio $pointsOfInterest[$location].audioPath play>>
+  <<link "Replay story">>
+    <<masteraudio stop>>   
+    <<audio $pointsOfInterest[$location].audioPath play>>
+  <</link>>
+<</nobr>>
+
+[[Explore other places | Travel to Location]]
+
+
+:: Agassiz Theater {"position":"900,25","size":"100,100"}
+<<nobr>>
+  <<set $location to "Agassiz Theater">>
+  Welcome to $location.
+
+  Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+  <<audio $pointsOfInterest[$location].audioPath play>>
+  <<link "Replay story">>
+    <<masteraudio stop>>   
+    <<audio $pointsOfInterest[$location].audioPath play>>
+  <</link>>
+<</nobr>>
+
+[[Explore other places | Travel to Location]]
+
+
+:: Sunken Garden {"position":"775,25","size":"100,100"}
+<<nobr>>
+  <<set $location to "Sunken Garden">>
+  Welcome to $location.
+
+  Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+  <<audio $pointsOfInterest[$location].audioPath play>>
+  <<link "Replay story">>
+    <<masteraudio stop>>   
+    <<audio $pointsOfInterest[$location].audioPath play>>
+  <</link>>
+<</nobr>>
+
+[[Explore other places | Travel to Location]]
+
+
+:: StoryScript [script]
+
+// window.getLocation
+//  Uses the Geolocation API to find the position of the device the Twine app is running on
+//  Code adapted from TheMadExile at https://twinery.org/forum/discussion/2789/geolocation-as-trigger
+window.getLocation = function () {
+  if ("geolocation" in navigator && typeof navigator.geolocation.getCurrentPosition === "function") {
+    var positionSuccess = function (position) {
+      state.active.variables["Location"] = {
+      lat : position.coords.latitude,
+      long : position.coords.longitude
+      };
+    },
+    positionError = function (error) {
+      console.log(`ERROR(${error}): ${error.message}`)
+    },
+    positionOptions = {
+      timeout: 31000, // How long (in ms) the program will try to find location before aborting
+      enableHighAccuracy: true,
+      maximumAge: 0 // How old a saved location can be
+    };
+
+    // Creates variables that Twine program will be able to access using $lat and $long
+    state.active.variables["Location"] = { lat : 0, long : 0 };
+
+    // Tries to find the current position
+    navigator.geolocation.getCurrentPosition(
+      positionSuccess,
+      positionError,
+      positionOptions
+    );
+  }
+};
+ 
+// window.approxEqual 
+//  Enables Twine programmer (you!) to allow approximate locations so that one doesn't need to be at the precise location to trigger the specific story.
+//  Code adapted from TheMadExile at https://twinery.org/forum/discussion/2789/geolocation-as-trigger
+window.approxEqual = function (a, b, allowedDiff) { 
+  // allowedDiff must always be > 0
+if (a === b) { // Handles "exact" edge cases
+return true;
+}
+allowedDiff = allowedDiff || 0.00005;
+return Math.abs(a - b) < allowedDiff;
+};
