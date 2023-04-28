@@ -1,20 +1,25 @@
 # Augmented Reality for Audio: A Workshop
+
 A Spring 2023 CS 196 / EDU T217 Final Project by Jasmyne Roberts
 
 ## What (is this)?
+
 This final project is intended to be an interdisciplinary workshop guide that uses location-based audio stories to encourage students to think critically about the relationships between technology, the self, and society. With this guide and instructor guidance, workshop participants will create and share their own mini audio narratives and engage in discussion about them. Over the course of the workshop, students will be encouraged to think about the following questions, categorized by topic.
 
-**Technology**
+### Technology
+
 * How can I use pattern matching to make sense of new code in an unfamiliar programming language? How can I apply my current technical knowledge to new and unfamiliar problems?
 * How can technology connect people together in the real world?
 * What does it mean to tell or consume a story?
 
-**Self**
+### Self
+
 * How do I feel about the physical spaces around me?
 * How can I clearly articulate my thoughts, feelings, and experiences for other people to hear?
 * What can I gain from being more aware of everyday spaces?
 
-**Society**
+### Society
+
 * What types of backgrounds and stories surround me?
 * What makes me similar to and different from people around me?
 * Why might I have an experience, reaction, or memory about a physical location that differs from others around me?
@@ -28,8 +33,10 @@ This semester, I was most intrigued by the papers and case studies that incorpor
 In my own K-12 education, technology classes always took place indoors in the computer lab. Whereas my natural science classes took me on field trips and outdoor excursions to dig in the dirt, computer science kept me indoors and sedentary. Computer science also had me working on solving problems that I couldn’t connect to my own life, and didn’t give me the guidance necessary to feel confident about injecting my own interests into the projects I created. Therefore, this project also comes from my desire to combine my own interests in computer science, storytelling, and audio.
 
 ## What (do you have so far)?
+
 Currently, I have a few things that I'd like to highlight about my project:
-1. A [outlined guide](index.md) for the three segments of the workshop, complete with how to create and interact with the audio stories
-2. Two example audio experiences ([Kamryn's](examples/kamryn_story.html), [Matthew's](examples/matthew_story.html))
-2. The two Twine stories that created them ([Kamryn's](examples/kamryn_story.twee), [Matthew's](examples/matthew_story.twee))
-3. A [Twine template](template_story.twee) for students and instructors to build their own stories.
+
+1. A [outlined guide](https://docs.google.com/document/d/1DrreY2RIdsJ4rah95K08479cF32YJtiBp0-bJ--hchY/) for the three segments of the workshop, complete with how to create and interact with the audio stories
+2. Three example audio experiences ([Kamryn's](examples/kamryn_story.html), [Matthew's](examples/matthew_story.html), [Louis'](examples/louis_story.html))
+3. The Twine files that created them ([Kamryn's](examples/kamryn_story.twee), [Matthew's](examples/matthew_story.twee), [Louis'](examples/louis_story.twee))
+4. A [Twine template](examples/template_story.twee) for students and instructors to build their own stories.
