@@ -4,7 +4,7 @@ Kamryn's Story
 
 :: StoryData
 {
-  "ifid": "EB95DC0D-B1A3-42C0-A187-19ED577B8AC8",
+  "ifid": "82A74691-2FAF-453E-AFEC-38C0E3507889",
   "format": "SugarCube",
   "format-version": "2.36.1",
   "start": "Start",
@@ -12,105 +12,7 @@ Kamryn's Story
 }
 
 
-:: /* SPECIFIC TO MY SETUP: from prototype work folder, run: ../tweego/tweego -o compiled/bottomup.html src */ {"position":"25,25","size":"100,100"}
-
-
-
-:: Agassiz Theater {"position":"1025,25","size":"100,100"}
-<<set $location to "Agassiz Theater">>
-$location
-
-Transcript: <<print $pointsOfInterest[$location].transcript>>
-
-<<audio $pointsOfInterest[$location].audioPath play>>
-<<link "Replay story">>
-   <<masteraudio stop>>   
-   <<audio $pointsOfInterest[$location].audioPath play>>
-<</link>>
-[[Explore other places | Travel to Location]]
-
-
-:: Display all locations {"position":"775,25","size":"100,100"}
-Which place do you want to explore?
-<<nobr>>
-  <ul>
-    <<for _key range Object.keys($pointsOfInterest)>>
-        <<set $place to _key + ": (latitude: " + $pointsOfInterest[_key].lat + ", longitude: " + $pointsOfInterest[_key].long + ")">>
-      <li>
-        [[$place | _key]]
-      </li>
-    <</for>>
-  </ul>
-<</nobr>>
-
-
-:: Find my Location {"position":"650,25","size":"100,100"}
-Let's see where you are. Hmm...
-<<nobr>>
-  /* My savior: https://qjzhvmqlzvoo5lqnrvuhmg.on.drv.tw/UInv/Sample_Code.html#Geolocation%20Access */
-  /* Load until location gets updated. Need to split location access and location usage 
-     because geolocation is an asynchronous function.  */
-  <<if $Location.lat == 0>>
-    <<goto [[Find my Location]]>>
-  <</if>>
-  <<set $match to "None">>
-  <<for _key range Object.keys($pointsOfInterest)>>
-    <<if approxEqual($Location.lat, $pointsOfInterest[_key].lat)>>
-      <<if approxEqual($Location.long, $pointsOfInterest[_key].long)>>
-        Matching _key!
-        <<set $match to _key>>
-        <<break>>
-      <</if>>
-    <</if>>
-  <</for>>
-
-  <<if $match == "None">>
-    It looks like you're not close to any of the locations I want to share with you.
-    Why don't you navigate to my first place of interest, <<print $startingLocation>>, and then [[try again|Find my Location]]?
-  <<else>>
-    It looks like you're close to _key.
-    [[Learn more about this location| _key]], or [[try again| Travel to Location]]?
-  <</if>>
-<</nobr>>
-
-
-/* Logic for not tracking locations */
-
-
-:: Graduate School of Education {"position":"1150,25","size":"100,100"}
-<<set $location to "Graduate School of Education">>
-$location
-
-Transcript: <<print $pointsOfInterest[$location].transcript>>
-
-<<audio $pointsOfInterest[$location].audioPath play>>
-<<link "Replay story">>
-   <<masteraudio stop>>   
-   <<audio $pointsOfInterest[$location].audioPath play>>
-<</link>>
-[[Explore other places | Travel to Location]]
-
-
-:: Let's go! {"position":"400,25","size":"100,100"}
-Welcome to my personal map! I'm Kamryn. Today, I'm going to share a few places around Harvard's campus that are special to me. 
-
-If you're able to walk around and navigate to the locations I mention, click on the link that says "Find my Location." Please make sure that your location is turned on.
-
-Otherwise, you can select "Don't use my location" and select the location you want to learn about without travelling there.
-
-If you change your mind about which setting you want to be on, select the arrow on the left side of your screen and press "Restart."
-
-[[Use my location| Travel to Location][$isLocationOn to true]], or [[Don't use my location| Travel to Location][$isLocationOn to false]]?
-
-<<audio intro play>>
-
-
-:: Start {"position":"275,25","size":"100,100"}
-Hello! Please put your headphones into your device and select "Let's go!" when you're ready.
-[[Let's go!]]
-
-
-:: StoryInit {"position":"150,25","size":"100,100"}
+:: StoryInit {"position":"25,25","size":"100,100"}
 /* Create data map of all story locations and associated sound files */
 <<set $pointsOfInterest to {
 	"Graduate School of Education":  {
@@ -133,35 +35,38 @@ Hello! Please put your headphones into your device and select "Let's go!" when y
 	}
 }>>
 
+/* In addition to loading the location audio, load the audio for the introductory statement as well. */
 <<cacheaudio intro "../audio/kamryn_intro.mp3">>  
 
-<<set $startingLocation to "Graduate School of Education">>
-
-/* Loop through data map and cache all audio,
-naming it by the location key name in the map */
+/* Loop through data map and cache all audio, naming it by the location key name in the map */
 <<for _key range Object.keys($pointsOfInterest)>>
   <<cacheaudio $pointsOfInterest[_key].audioPath $pointsOfInterest[_key].audioPath>>  
 <</for>>
 
-/* hide the reset bar on the side */
+/* Collapse the reset bar to the side */
 <<run UIBar.stow()>>
 
 
-:: Sunken Garden {"position":"900,25","size":"100,100"}
-<<set $location to "Sunken Garden">>
-$location
-
-Transcript: <<print $pointsOfInterest[$location].transcript>>
-
-<<audio $pointsOfInterest[$location].audioPath play>>
-<<link "Replay story">>
-   <<masteraudio stop>>   
-   <<audio $pointsOfInterest[$location].audioPath play>>
-<</link>>
-[[Explore other places | Travel to Location]]
+:: Start {"position":"150,25","size":"100,100"}
+Hello! Please put your headphones into your device and select "Let's go!" when you're ready.
+[[Let's go!]]
 
 
-:: Travel to Location {"position":"525,25","size":"100,100"}
+:: Let's go! {"position":"275,25","size":"100,100"}
+[[Use my location| Travel to Location][$isLocationOn to true]], or [[Don't use my location| Travel to Location][$isLocationOn to false]]?
+
+Transcript: Welcome to my personal map! I'm Kamryn. Today, I'm going to share a few places around Harvard's campus that are special to me. 
+
+If you're able to walk around and navigate to the locations I mention, click on the link that says "Find my Location." Please make sure that your location is turned on.
+
+Otherwise, you can select "Don't use my location" and select the location you want to learn about without travelling there.
+
+If you change your mind about which setting you want to be on, select the arrow on the left side of your screen and press "Restart."
+
+<<audio intro play>>
+
+
+:: Travel to Location {"position":"400,25","size":"100,100"}
 <<masteraudio stop>>   
 <<if $isLocationOn == true>>
   <<script>>getLocation();<</script>>
@@ -170,46 +75,151 @@ Transcript: <<print $pointsOfInterest[$location].transcript>>
   <<goto [[Display all locations]]>>
 <</if>>
 
+
+:: Find my Location {"position":"525,25","size":"100,100"}
 /* Logic for tracking locations */
+<<nobr>>
+  /* Load until location gets updated. Need to split location access and location usage 
+     because geolocation is an asynchronous function.  */
+  <<if $Location.lat == 0>>
+    <<goto [[Find my Location]]>>
+  <</if>>
+  <<set $match to "None">>
+  <<for _key range Object.keys($pointsOfInterest)>>
+    <<if approxEqual($Location.lat, $pointsOfInterest[_key].lat)>>
+      <<if approxEqual($Location.long, $pointsOfInterest[_key].long)>>
+        <<set $match to _key>>
+        <<break>>
+      <</if>>
+    <</if>>
+  <</for>>
+
+  <<if $match == "None">>
+    It looks like you're not close to any of the locations I want to share with you.
+    Why don't you make your way to any of the following locations, and then [[try again|Find my Location]]?
+      <ul>
+        <<for _key range Object.keys($pointsOfInterest)>>
+            <<set $place to _key + ": (latitude: " + $pointsOfInterest[_key].lat + ", longitude: " + $pointsOfInterest[_key].long + ")">>
+          <li>
+            $place
+          </li>
+        <</for>>
+      </ul>
+  <<else>>
+    It looks like you're close to _key.
+    [[Learn more about this location| _key]], or [[try again| Travel to Location]]?
+  <</if>>
+<</nobr>>
+
+
+:: Display all locations {"position":"650,25","size":"100,100"}
+/* Logic for not tracking locations */
+Which place do you want to explore?
+<<nobr>>
+  <ul>
+    <<for _key range Object.keys($pointsOfInterest)>>
+        <<set $place to _key + ": (latitude: " + $pointsOfInterest[_key].lat + ", longitude: " + $pointsOfInterest[_key].long + ")">>
+      <li>
+        [[$place | _key]]
+      </li>
+    <</for>>
+  </ul>
+<</nobr>>
+
+
+:: Graduate School of Education {"position":"1025,25","size":"100,100"}
+<<nobr>>
+  <<set $location to "Graduate School of Education">>
+  Welcome to $location.
+
+  Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+  <<audio $pointsOfInterest[$location].audioPath play>>
+  <<link "Replay story">>
+    <<masteraudio stop>>   
+    <<audio $pointsOfInterest[$location].audioPath play>>
+  <</link>>
+<</nobr>>
+
+[[Explore other places | Travel to Location]]
+
+
+:: Agassiz Theater {"position":"900,25","size":"100,100"}
+<<nobr>>
+  <<set $location to "Agassiz Theater">>
+  Welcome to $location.
+
+  Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+  <<audio $pointsOfInterest[$location].audioPath play>>
+  <<link "Replay story">>
+    <<masteraudio stop>>   
+    <<audio $pointsOfInterest[$location].audioPath play>>
+  <</link>>
+<</nobr>>
+
+[[Explore other places | Travel to Location]]
+
+
+:: Sunken Garden {"position":"775,25","size":"100,100"}
+<<nobr>>
+  <<set $location to "Sunken Garden">>
+  Welcome to $location.
+
+  Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+  <<audio $pointsOfInterest[$location].audioPath play>>
+  <<link "Replay story">>
+    <<masteraudio stop>>   
+    <<audio $pointsOfInterest[$location].audioPath play>>
+  <</link>>
+<</nobr>>
+
+[[Explore other places | Travel to Location]]
 
 
 :: StoryScript [script]
-// initialization, on loop (ideally)
+
+// window.getLocation
+//  Uses the Geolocation API to find the position of the device the Twine app is running on
+//  Code adapted from TheMadExile at https://twinery.org/forum/discussion/2789/geolocation-as-trigger
 window.getLocation = function () {
   if ("geolocation" in navigator && typeof navigator.geolocation.getCurrentPosition === "function") {
-  // setup the success and error callbacks as well as the options object
-  var positionSuccess = function (position) {
-    state.active.variables["Location"] = {
-    lat : position.coords.latitude,
-    long : position.coords.longitude
+    var positionSuccess = function (position) {
+      state.active.variables["Location"] = {
+      lat : position.coords.latitude,
+      long : position.coords.longitude
+      };
+    },
+    positionError = function (error) {
+      console.log(`ERROR(${error}): ${error.message}`)
+    },
+    positionOptions = {
+      timeout: 31000, // How long (in ms) the program will try to find location before aborting
+      enableHighAccuracy: true,
+      maximumAge: 0 // How old a saved location can be
     };
-    console.log(`Suceeded in getting location; lat: ${state.active.variables["Location"].lat} long: ${state.active.variables["Location"].long}`)
-  },
-  positionError = function (error) {
-    console.log(`ERROR(${error}): ${error.message}`)
-  },
-  positionOptions = {
-    timeout: 31000, // how long (in ms) can try to find location before aborting
-    enableHighAccuracy: true,
-    maximumAge: 0 // how old a saved location can be
-  };
 
-  state.active.variables["Location"] = { lat : 0, long : 0 };
+    // Creates variables that Twine program will be able to access using $lat and $long
+    state.active.variables["Location"] = { lat : 0, long : 0 };
 
-  console.log("Trying to find location")
-  // make a  call for a position
-  navigator.geolocation.getCurrentPosition(
-  positionSuccess,
-  positionError,
-  positionOptions
-  );
-}};
+    // Tries to find the current position
+    navigator.geolocation.getCurrentPosition(
+      positionSuccess,
+      positionError,
+      positionOptions
+    );
+  }
+};
  
-// (function approxEqual(a, b, allowedDiff) {
-window.approxEqual = function (a, b, allowedDiff) { // allowedDiff must always be > 0
-if (a === b) { // handles "exact" edge cases
+// window.approxEqual 
+//  Enables Twine programmer (you!) to allow approximate locations so that one doesn't need to be at the precise location to trigger the specific story.
+//  Code adapted from TheMadExile at https://twinery.org/forum/discussion/2789/geolocation-as-trigger
+window.approxEqual = function (a, b, allowedDiff) { 
+  // allowedDiff must always be > 0
+if (a === b) { // Handles "exact" edge cases
 return true;
 }
-allowedDiff = allowedDiff || 0.0005;
+allowedDiff = allowedDiff || 0.00005;
 return Math.abs(a - b) < allowedDiff;
 };
