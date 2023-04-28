@@ -1,0 +1,225 @@
+:: StoryTitle
+Your Story
+
+
+:: StoryData
+{
+  "ifid": "",
+  "format": "SugarCube",
+  "format-version": "2.36.1",
+  "start": "Start",
+  "zoom": 1
+}
+
+
+:: StoryInit {"position":"25,25","size":"100,100"}
+/* Create data map of all story locations and associated sound files */
+<<set $pointsOfInterest to {
+	"Location 1":  {
+		lat: 1,
+		long: 1,
+    audioPath: "../audio/example_recording.mp3",
+    transcript: "Transcript for Location 1"
+	},
+  "Location 2":  {
+		lat: 2,
+		long: 2,
+    audioPath: "../audio/example_recording.mp3",
+    transcript: "Transcript for Location 2"
+	},
+  "Location 3":  {
+		lat: 3,
+		long: 3,
+    audioPath: "../audio/example_recording.mp3",
+    transcript: "Transcript for Location 3"
+	}
+}>>
+
+/* In addition to loading the location audio, load the audio for the introductory statement as well. */
+<<cacheaudio intro "../audio/kamryn_intro.mp3">>  
+
+/* Loop through data map and pre-load all audio, naming it by the location key name in the map */
+<<for _key range Object.keys($pointsOfInterest)>>
+  <<cacheaudio $pointsOfInterest[_key].audioPath $pointsOfInterest[_key].audioPath>>  
+<</for>>
+
+/* Collapse the reset bar to the side */
+<<run UIBar.stow()>>
+
+
+:: Start {"position":"150,25","size":"100,100"}
+Hello! Please put your headphones into your device and select "Let's go!" when you're ready.
+[[Let's go!]]
+
+
+:: Let's go! {"position":"275,25","size":"100,100"}
+[[Use my location| Travel to Location][$isLocationOn to true]], or [[Don't use my location| Travel to Location][$isLocationOn to false]]?
+
+Transcript: Introduce yourself and the story to the listener! Make sure that they know what links to press and where to go!
+
+You might say: Hi! This is my story. If you're able to walk around and navigate to the locations I mention, click on the link that says "Find my Location." Please make sure that your location is turned on.
+
+Otherwise, you can select "Don't use my location" and select the location you want to learn about without travelling there.
+
+If you change your mind about which setting you want to be on, select the arrow on the left side of your screen and press "Restart."
+
+<<audio intro play>>
+
+
+:: Travel to Location {"position":"400,25","size":"100,100"}
+<<masteraudio stop>>   
+<<if $isLocationOn == true>>
+  <<script>>getLocation();<</script>>
+  <<goto [[Find my Location]]>>
+<<else>>
+  <<goto [[Display all locations]]>>
+<</if>>
+
+
+:: Find my Location {"position":"525,25","size":"100,100"}
+/* Logic for tracking locations */
+<<nobr>>
+  /* Load until location gets updated. Need to split location access and location usage 
+     because geolocation is an asynchronous function.  */
+  <<if $Location.lat == 0>>
+    <<goto [[Find my Location]]>>
+  <</if>>
+  <<set $match to "None">>
+  <<for _key range Object.keys($pointsOfInterest)>>
+    <<if approxEqual($Location.lat, $pointsOfInterest[_key].lat)>>
+      <<if approxEqual($Location.long, $pointsOfInterest[_key].long)>>
+        <<set $match to _key>>
+        <<break>>
+      <</if>>
+    <</if>>
+  <</for>>
+
+  <<if $match == "None">>
+    It looks like you're not close to any of the locations I want to share with you.
+    Why don't you make your way to any of the following locations, and then [[try again|Find my Location]]?
+      <ul>
+        <<for _key range Object.keys($pointsOfInterest)>>
+            <<set $place to _key + ": (latitude: " + $pointsOfInterest[_key].lat + ", longitude: " + $pointsOfInterest[_key].long + ")">>
+          <li>
+            $place
+          </li>
+        <</for>>
+      </ul>
+  <<else>>
+    It looks like you're close to _key.
+    [[Learn more about this location| _key]], or [[try again| Travel to Location]]?
+  <</if>>
+<</nobr>>
+
+
+:: Display all locations {"position":"650,25","size":"100,100"}
+/* Logic for not tracking locations */
+Which place do you want to explore?
+<<nobr>>
+  <ul>
+    <<for _key range Object.keys($pointsOfInterest)>>
+        <<set $place to _key + ": (latitude: " + $pointsOfInterest[_key].lat + ", longitude: " + $pointsOfInterest[_key].long + ")">>
+      <li>
+        [[$place | _key]]
+      </li>
+    <</for>>
+  </ul>
+<</nobr>>
+
+
+:: Location 1 {"position":"1025,25","size":"100,100"}
+<<nobr>>
+  <<set $location to "Location 1">>
+  Welcome to $location.
+
+  Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+  <<audio $pointsOfInterest[$location].audioPath play>>
+  <<link "Replay story">>
+    <<masteraudio stop>>   
+    <<audio $pointsOfInterest[$location].audioPath play>>
+  <</link>>
+<</nobr>>
+
+[[Explore other places | Travel to Location]]
+
+
+:: Location 2 {"position":"900,25","size":"100,100"}
+<<nobr>>
+  <<set $location to "Location 2">>
+  Welcome to $location.
+
+  Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+  <<audio $pointsOfInterest[$location].audioPath play>>
+  <<link "Replay story">>
+    <<masteraudio stop>>   
+    <<audio $pointsOfInterest[$location].audioPath play>>
+  <</link>>
+<</nobr>>
+
+[[Explore other places | Travel to Location]]
+
+
+:: Location 3 {"position":"775,25","size":"100,100"}
+<<nobr>>
+  <<set $location to "Location 3">>
+  Welcome to $location.
+
+  Transcript: <<print $pointsOfInterest[$location].transcript>>
+
+  <<audio $pointsOfInterest[$location].audioPath play>>
+  <<link "Replay story">>
+    <<masteraudio stop>>   
+    <<audio $pointsOfInterest[$location].audioPath play>>
+  <</link>>
+<</nobr>>
+
+[[Explore other places | Travel to Location]]
+
+
+:: StoryScript [script]
+
+// window.getLocation
+//  Uses the Geolocation API to find the position of the device the Twine app is running on
+//  Code adapted from TheMadExile at https://twinery.org/forum/discussion/2789/geolocation-as-trigger
+window.getLocation = function () {
+  if ("geolocation" in navigator && typeof navigator.geolocation.getCurrentPosition === "function") {
+    var positionSuccess = function (position) {
+      state.active.variables["Location"] = {
+      lat : position.coords.latitude,
+      long : position.coords.longitude
+      };
+    },
+    positionError = function (error) {
+      console.log(`ERROR(${error}): ${error.message}`)
+    },
+    positionOptions = {
+      timeout: 31000, // How long (in ms) the program will try to find location before aborting
+      enableHighAccuracy: true,
+      maximumAge: 0 // How old a saved location can be
+    };
+
+    // Creates variables that Twine program will be able to access using $lat and $long
+    state.active.variables["Location"] = { lat : 0, long : 0 };
+
+    // Tries to find the current position
+    navigator.geolocation.getCurrentPosition(
+      positionSuccess,
+      positionError,
+      positionOptions
+    );
+  }
+};
+ 
+// window.approxEqual 
+//  Enables Twine programmer (you!) to allow approximate locations so that one doesn't need to be at the precise location to trigger the specific story.
+//  Code adapted from TheMadExile at https://twinery.org/forum/discussion/2789/geolocation-as-trigger
+window.approxEqual = function (a, b, allowedDiff) { 
+  // allowedDiff must always be > 0
+if (a === b) { // Handles "exact" edge cases
+return true;
+}
+allowedDiff = allowedDiff || 0.00005;
+return Math.abs(a - b) < allowedDiff;
+};
