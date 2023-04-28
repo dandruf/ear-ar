@@ -40,3 +40,6 @@ Currently, I have a few things that I'd like to highlight about my project:
 2. Three example audio experiences ([Kamryn's](examples/kamryn_story.html), [Matthew's](examples/matthew_story.html), [Louis'](examples/louis_story.html))
 3. The Twine files that created them ([Kamryn's](examples/kamryn_story.twee), [Matthew's](examples/matthew_story.twee), [Louis'](examples/louis_story.twee))
 4. A [Twine template](examples/template_story.twee) for students and instructors to build their own stories.
+
+## Who (do you have to thank)?
+Karen Brennan and Brian Yu, of course! And a huge thank you to my classmates in CS 196 / EDU T217: Designing K-12 CS Experiences. 
